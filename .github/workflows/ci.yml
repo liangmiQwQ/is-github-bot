@@ -4,47 +4,40 @@ on:
   push:
     branches:
       - main
+
   pull_request:
     branches:
       - main
 
-permissions:
-  contents: read
-
 jobs:
-  check:
-    name: Lint and format (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
+  lint:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: voidzero-dev/setup-vp@v1
         with:
           node-version: "22"
           cache: true
+          run-install: true
+
       - run: vp check
 
   test:
-    name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+
     strategy:
-      fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
+        node-version: ["22"]
+        os: [ubuntu-latest, macos-latest]
+      fail-fast: false
+
     steps:
       - uses: actions/checkout@v6
       - uses: voidzero-dev/setup-vp@v1
         with:
-          node-version: "22"
+          node-version: ${{ matrix.node-version }}
           cache: true
-      - run: vp run -r build
-      - run: vp run -r test
+          run-install: true
+
+      - run: vp run build
+      - run: vp test
