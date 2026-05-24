@@ -33,16 +33,6 @@ const emit = defineEmits<{
       <span class="i-ph-github-logo" aria-hidden="true" />
     </a>
 
-    <a
-      class="void-link max-sm:max-w-32 max-sm:overflow-hidden max-sm:text-ellipsis max-sm:whitespace-nowrap"
-      href="https://void.cloud/"
-      rel="noreferrer"
-      target="_blank"
-      aria-label="Open Void"
-    >
-      Built on Void
-    </a>
-
     <button
       class="icon-button"
       type="button"

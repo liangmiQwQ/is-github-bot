@@ -22,7 +22,7 @@ const canSubmit = computed(() => query.value.trim().length > 0 && !props.loading
   <section class="w-full max-w-230" aria-label="GitHub account checker">
     <form class="flex flex-col gap-2" @submit.prevent="emit('submit')">
       <div
-        class="flex h-14 items-center gap-2 border border-neutral-300 rounded-xl bg-white px-4 focus-within:(border-black ring-2 ring-black/8) dark:(border-neutral-700 bg-black focus-within:border-white focus-within:ring-white/16) max-sm:h-auto max-sm:(flex-col items-stretch p-2)"
+        class="flex h-14 items-center gap-2 border border-neutral-200 rounded-xl bg-white px-4 focus-within:(border-neutral-300 ring-2 ring-black/8) duration-100 dark:(border-neutral-700 bg-black focus-within:border-neutral-700 focus-within:ring-white/16) max-sm:h-auto max-sm:(flex-col items-stretch p-2)"
       >
         <span
           class="i-ph-magnifying-glass ml-1 shrink-0 text-neutral-500 max-sm:hidden dark:text-neutral-400"
@@ -31,7 +31,7 @@ const canSubmit = computed(() => query.value.trim().length > 0 && !props.loading
         <input
           id="github-handle"
           v-model="query"
-          class="min-w-0 flex-1 border-0 bg-transparent text-sm text-black outline-0 placeholder:text-neutral-400 dark:text-white"
+          class="min-w-0 flex-1 border-0 pb-0.2 text-lg bg-transparent text-sm text-black outline-0 placeholder:text-neutral-400 dark:text-white"
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"

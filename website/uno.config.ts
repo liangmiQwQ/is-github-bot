@@ -9,7 +9,7 @@ import {
 } from "unocss";
 
 export default defineConfig({
-  presets: [presetWind4(), presetIcons(), presetTypography(), presetAttributify()],
+  presets: [presetWind4(), presetIcons({ scale: 1.2 }), presetTypography(), presetAttributify()],
   shortcuts: {
     "icon-button":
       "inline-flex h-9 w-9 items-center justify-center rounded-md bg-transparent text-neutral-900 transition hover:bg-neutral-100 active:scale-96 dark:text-neutral-50 dark:hover:bg-neutral-900",

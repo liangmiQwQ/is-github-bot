@@ -50,7 +50,7 @@ function updateToken(event: Event) {
         <label class="mt-6 flex flex-col gap-2 text-left">
           <span class="text-sm text-neutral-700 font-500 dark:text-neutral-300">Token</span>
           <input
-            class="h-10 border border-neutral-300 rounded-md bg-white px-3 text-sm text-black outline-0 focus:(border-black ring-2 ring-black/8) dark:(border-neutral-700 bg-black text-white focus:border-white focus:ring-white/16)"
+            class="h-10 border transition-100 border-neutral-200 rounded-md bg-white px-3 text-sm text-black outline-0 focus:(border-neutral-300 ring-2 ring-black/8) dark:(border-neutral-700 bg-black text-white focus:border-neutral-700 focus:ring-white/16)"
             :value="token"
             autocomplete="off"
             placeholder="github_pat_..."
