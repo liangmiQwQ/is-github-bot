@@ -19,29 +19,32 @@ const canSubmit = computed(() => query.value.trim().length > 0 && !props.loading
 </script>
 
 <template>
-  <section class="mt-9 w-full max-w-160" aria-label="GitHub account checker">
-    <form class="flex flex-col gap-2.5" @submit.prevent="emit('submit')">
-      <label class="self-start text-sm text-[var(--muted)] font-700" for="github-handle">
+  <section class="mt-8 w-full max-w-132" aria-label="GitHub account checker">
+    <form class="flex flex-col gap-2" @submit.prevent="emit('submit')">
+      <label
+        class="self-start text-sm text-neutral-600 font-500 dark:text-neutral-400"
+        for="github-handle"
+      >
         GitHub username
       </label>
       <div
-        class="flex min-h-16 items-center gap-3 border border-[var(--line)] rounded-lg bg-[var(--panel)] p-2 shadow-[var(--shadow)] focus-within:(border-[var(--primary)] shadow-[0_0_0_4px_color-mix(in_srgb,var(--primary)_16%,transparent)]) max-sm:(flex-col items-stretch)"
+        class="flex h-11 items-center gap-2 border border-neutral-300 rounded-md bg-white px-2 focus-within:(border-black ring-2 ring-black/8) dark:(border-neutral-700 bg-black focus-within:border-white focus-within:ring-white/16) max-sm:h-auto max-sm:(flex-col items-stretch p-2)"
       >
         <span
-          class="i-ph-magnifying-glass ml-2.5 shrink-0 text-[var(--muted)] max-sm:hidden"
+          class="i-ph-magnifying-glass ml-1 shrink-0 text-neutral-500 max-sm:hidden dark:text-neutral-400"
           aria-hidden="true"
         />
         <input
           id="github-handle"
           v-model="query"
-          class="min-w-0 flex-1 border-0 bg-transparent text-[var(--text)] text-[1.08rem] outline-0 placeholder:text-[color-mix(in_srgb,var(--muted)_70%,transparent)]"
+          class="min-w-0 flex-1 border-0 bg-transparent text-sm text-black outline-0 placeholder:text-neutral-400 dark:text-white"
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"
           placeholder="octocat"
         />
         <button
-          class="min-w-24 self-stretch border-0 rounded-md bg-[var(--primary)] px-5 text-[var(--primary-text)] font-800 disabled:(cursor-not-allowed opacity-48) enabled:(cursor-pointer hover:-translate-y-0.25) max-sm:min-h-11"
+          class="h-8 min-w-18 rounded-md bg-black px-3 text-sm text-white font-600 disabled:(cursor-not-allowed opacity-40) enabled:(cursor-pointer hover:bg-neutral-800 active:scale-98) dark:(bg-white text-black enabled:hover:bg-neutral-200) max-sm:h-9"
           type="submit"
           :disabled="!canSubmit"
         >
@@ -52,21 +55,21 @@ const canSubmit = computed(() => query.value.trim().length > 0 && !props.loading
 
     <div
       v-if="loading"
-      class="panel-surface mt-4 flex items-center gap-4 p-4 text-left max-sm:(flex-col items-stretch)"
+      class="mt-4 flex items-center gap-3 text-left max-sm:(flex-col items-stretch)"
       aria-live="polite"
       aria-label="Fetching account"
     >
-      <div class="skeleton-block h-18 w-18 shrink-0 rounded-lg max-sm:(h-16 w-16)" />
-      <div class="flex flex-1 flex-col gap-2.5">
-        <div class="skeleton-block h-3.5 w-7/10 rounded-full" />
-        <div class="skeleton-block h-3.5 rounded-full" />
-        <div class="skeleton-block h-3.5 w-2/5 rounded-full" />
+      <div class="skeleton-block h-14 w-14 shrink-0 rounded-md" />
+      <div class="flex flex-1 flex-col gap-2">
+        <div class="skeleton-block h-3 w-7/10 rounded-full" />
+        <div class="skeleton-block h-3 rounded-full" />
+        <div class="skeleton-block h-3 w-2/5 rounded-full" />
       </div>
     </div>
 
     <p
       v-else-if="error"
-      class="panel-surface mt-4 p-4 text-left text-[var(--danger)] font-700"
+      class="mt-4 text-left text-sm text-red-600 font-500 dark:text-red-400"
       role="alert"
     >
       {{ error }}

@@ -21,19 +21,16 @@ const statusLabel = computed(() => {
 });
 
 const statusClass = computed(() => {
-  if (props.result.status === "human") return "text-[var(--success)]";
-  if (props.result.status === "bot") return "text-[var(--danger)]";
-  if (props.result.status === "suspicious") return "text-[var(--warning)]";
-  return "text-[var(--unknown)]";
+  if (props.result.status === "bot") return "bg-red-600 text-white dark:bg-red-500 dark:text-white";
+  if (props.result.status === "suspicious") return "bg-amber-500 text-black";
+  return "";
 });
 </script>
 
 <template>
-  <article
-    class="panel-surface mt-4 flex items-center gap-4 p-4 text-left max-sm:(flex-col items-stretch)"
-  >
+  <article class="mt-5 flex items-center gap-3 text-left max-sm:(flex-col items-stretch)">
     <img
-      class="h-18 w-18 shrink-0 border border-[var(--line-soft)] rounded-lg object-cover max-sm:(h-16 w-16)"
+      class="h-14 w-14 shrink-0 rounded-md object-cover"
       :alt="`${result.profile.login} avatar`"
       :src="result.profile.avatarUrl"
     />
@@ -41,11 +38,11 @@ const statusClass = computed(() => {
     <div class="min-w-0 flex-1">
       <div class="flex items-start justify-between gap-4 max-sm:(flex-col items-stretch)">
         <div>
-          <h2 class="m-0 text-[var(--text)] text-xl leading-tight">
+          <h2 class="m-0 text-base text-black font-650 leading-tight dark:text-white">
             {{ result.profile.name || result.profile.login }}
           </h2>
           <a
-            class="text-sm text-[var(--muted)] no-underline hover:text-[var(--primary-strong)]"
+            class="text-sm text-neutral-600 no-underline hover:text-black dark:text-neutral-400 dark:hover:text-white"
             :href="result.profile.url"
             rel="noreferrer"
             target="_blank"
@@ -62,7 +59,7 @@ const statusClass = computed(() => {
 
       <a
         v-if="result.profile.homepage"
-        class="mt-2.5 block max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[var(--muted)] no-underline hover:text-[var(--primary-strong)]"
+        class="mt-1.5 block max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm text-neutral-600 no-underline hover:text-black dark:text-neutral-400 dark:hover:text-white"
         :href="result.profile.homepage"
         rel="noreferrer"
         target="_blank"
@@ -71,7 +68,7 @@ const statusClass = computed(() => {
       </a>
       <p
         v-else
-        class="mt-2.5 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[var(--muted)]"
+        class="mt-1.5 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-500"
       >
         No homepage listed
       </p>

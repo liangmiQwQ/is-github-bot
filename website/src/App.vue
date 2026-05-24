@@ -23,7 +23,7 @@ function closeSettings() {
 
 <template>
   <main
-    class="relative flex min-h-svh items-center justify-center px-5 pb-12 pt-28 text-[var(--text)] max-sm:(items-start pt-24)"
+    class="relative flex min-h-svh items-center justify-center bg-white px-5 pb-12 pt-28 text-black dark:bg-black dark:text-white max-sm:(items-start pt-24)"
   >
     <TopActions :mode="mode" @toggle-mode="toggleMode" @open-settings="openSettings" />
 
@@ -31,16 +31,18 @@ function closeSettings() {
       class="flex w-full max-w-180 flex-col items-center text-center"
       aria-labelledby="site-title"
     >
-      <p class="mb-3 text-xs text-[var(--muted)] font-800 tracking-[0.12em] uppercase">
+      <p
+        class="mb-3 text-xs text-neutral-500 font-650 tracking-[0.08em] uppercase dark:text-neutral-400"
+      >
         Open source maintainer tooling
       </p>
       <h1
         id="site-title"
-        class="text-[clamp(2.75rem,8vw,5.5rem)] text-[var(--primary-strong)] font-850 leading-[0.95]"
+        class="text-[clamp(2.75rem,8vw,5.5rem)] text-black font-850 leading-[0.95] dark:text-white"
       >
         is-github-bot
       </h1>
-      <p class="mt-5 max-w-136 text-[var(--muted)] text-[1.05rem] leading-7">
+      <p class="mt-5 max-w-124 text-neutral-600 text-base leading-6 dark:text-neutral-400">
         Check public GitHub account signals locally in your browser.
       </p>
 

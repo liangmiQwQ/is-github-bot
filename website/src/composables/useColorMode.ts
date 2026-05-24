@@ -5,7 +5,6 @@ const STORAGE_KEY = "is-github-bot-color-mode";
 
 export function useColorMode() {
   const colorMode = useVueUseColorMode({
-    attribute: "data-theme",
     storageKey: STORAGE_KEY,
   });
   const mode = computed(() => (colorMode.value === "dark" ? "dark" : "light"));

@@ -18,20 +18,24 @@ function updateToken(event: Event) {
   <Teleport to="body">
     <div
       v-if="open"
-      class="fixed inset-0 z-40 flex justify-end bg-slate-900/42 p-4 max-sm:p-0"
+      class="fixed inset-0 z-40 flex items-center justify-center bg-white/80 p-4 backdrop-blur-sm dark:bg-black/80"
       role="presentation"
       @click.self="emit('close')"
     >
-      <aside
-        class="min-h-svh w-full max-w-100 border border-[var(--line)] rounded-lg bg-[var(--panel)] p-5 text-[var(--text)] shadow-[var(--shadow)] max-sm:rounded-0"
+      <section
+        class="w-full max-w-108 border border-neutral-200 rounded-lg bg-white p-5 text-black shadow-2xl shadow-black/8 dark:border-neutral-800 dark:bg-black dark:text-white dark:shadow-white/8"
         aria-labelledby="settings-title"
+        aria-modal="true"
+        role="dialog"
       >
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="mb-3 text-xs text-[var(--muted)] font-800 tracking-[0.12em] uppercase">
+            <p
+              class="mb-2 text-xs text-neutral-500 font-600 tracking-[0.08em] uppercase dark:text-neutral-400"
+            >
               Settings
             </p>
-            <h2 id="settings-title" class="m-0 text-[1.6rem] leading-tight">GitHub API</h2>
+            <h2 id="settings-title" class="m-0 text-xl font-650 leading-tight">GitHub API</h2>
           </div>
           <button
             class="icon-button"
@@ -43,10 +47,10 @@ function updateToken(event: Event) {
           </button>
         </div>
 
-        <label class="mt-8 flex flex-col gap-2 text-left">
-          <span class="text-sm text-[var(--muted)] font-800">Token</span>
+        <label class="mt-6 flex flex-col gap-2 text-left">
+          <span class="text-sm text-neutral-700 font-500 dark:text-neutral-300">Token</span>
           <input
-            class="min-h-11 border border-[var(--line)] rounded-lg bg-[var(--bg)] px-3 text-[var(--text)] outline-0 focus:(border-[var(--primary)] shadow-[0_0_0_4px_color-mix(in_srgb,var(--primary)_16%,transparent)])"
+            class="h-10 border border-neutral-300 rounded-md bg-white px-3 text-sm text-black outline-0 focus:(border-black ring-2 ring-black/8) dark:(border-neutral-700 bg-black text-white focus:border-white focus:ring-white/16)"
             :value="token"
             autocomplete="off"
             placeholder="github_pat_..."
@@ -54,7 +58,7 @@ function updateToken(event: Event) {
             @input="updateToken"
           />
         </label>
-      </aside>
+      </section>
     </div>
   </Teleport>
 </template>
