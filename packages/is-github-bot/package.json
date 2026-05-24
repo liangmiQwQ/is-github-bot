@@ -24,11 +24,16 @@
     "access": "public"
   },
   "scripts": {
+    "is-github-bot": "oxnode ./src/cli.ts",
     "build": "vp pack",
     "dev": "vp pack --watch",
     "test": "vp test",
     "check": "vp check",
     "prepublishOnly": "vp run build"
+  },
+  "dependencies": {
+    "cac": "catalog:cli",
+    "picocolors": "catalog:cli"
   },
   "devDependencies": {
     "@types/node": "catalog:type",
