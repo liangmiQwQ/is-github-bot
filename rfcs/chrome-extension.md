@@ -4,7 +4,7 @@ We provide a browser extension for Chrome users. It only have effects for some s
 
 ## Enhancements
 
-We cache each user's status for 20 days.
+We cache each user's status for 15 days.
 
 ### Avatar outline
 
@@ -33,7 +33,7 @@ Only effect on these pages:
 
 ## Settings
 
-We provide a single setting page, includes these options
+We provide a single setting page, includes these options.
 
 1. Check the author of pr / issue (Default: on)
    1. Skip checking for `collaborator`, `member` (Default: on)
@@ -44,3 +44,5 @@ We provide a single setting page, includes these options
 2. Check the author of pr / issue (Default: on)
    1. Show `Block` button for bot (Default: off)
 3. GitHub Token (Optional)
+
+We use Vue3, TypeScript, UnoCSS to build setting page. We use flex, center layout as basically layout. Use `slate` as primary color. Use `@iconify-json/ph` for icons. UI should be similar to website's one.
