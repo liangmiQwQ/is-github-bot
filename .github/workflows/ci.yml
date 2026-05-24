@@ -20,6 +20,7 @@ jobs:
           cache: true
           run-install: true
 
+      - run: vpr build
       - run: vp check
 
   test:
