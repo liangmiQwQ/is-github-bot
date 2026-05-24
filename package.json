@@ -6,10 +6,11 @@
   "scripts": {
     "ready": "vp check && vp run -r test && vp run -r build",
     "dev": "vp run website#dev",
-    "prepare": "vp config"
+    "release": "bumpp"
   },
   "devDependencies": {
-    "vite-plus": "catalog:"
+    "bumpp": "catalog:cli",
+    "vite-plus": "catalog:build"
   },
   "engines": {
     "node": ">=22.12.0"

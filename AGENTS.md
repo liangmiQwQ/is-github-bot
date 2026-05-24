@@ -12,7 +12,7 @@ If you want detailed information about some feature, view [RFCS](/rfcs) director
 
 ## Rule
 
-Vite+ is used as the project manager. Use `vp install` to install dependencies, use `pnpm-workspace.yaml` to categorize dependencies. Use `vp run` command to run commands in `package.json`.
+Vite+ is used as the project manager. Use `vp install` to install dependencies. Always use named catalogs in `pnpm-workspace.yaml` to manage dependency versions. Use `vp run` command to run commands in `package.json`.
 
 Run `vp check` (lint and format) and `vp test`(vitest) after you make changes.
 
