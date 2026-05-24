@@ -6,7 +6,8 @@
   "scripts": {
     "ready": "vp check && vp run -r test && vp run -r build",
     "dev": "vp run website#dev",
-    "release": "bumpp"
+    "build": "vp run -r build",
+    "release": "bumpp --commit \"chore: release v%s\" --tag \"v%s\" --push"
   },
   "devDependencies": {
     "bumpp": "catalog:cli",
