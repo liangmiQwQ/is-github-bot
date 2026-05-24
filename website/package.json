@@ -1,0 +1,23 @@
+{
+  "name": "website",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "tsc && vp build",
+    "preview": "vp preview"
+  },
+  "dependencies": {
+    "vue": "catalog:build"
+  },
+  "devDependencies": {
+    "@iconify-json/ph": "catalog:icon",
+    "@unocss/reset": "catalog:build",
+    "@vitejs/plugin-vue": "catalog:build",
+    "typescript": "catalog:build",
+    "unocss": "catalog:build",
+    "vite": "catalog:build",
+    "vite-plus": "catalog:build"
+  }
+}

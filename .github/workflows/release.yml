@@ -7,10 +7,40 @@ on:
 
 jobs:
   release:
-    uses: sxzz/workflows/.github/workflows/release.yml@v1
-    with:
-      publish: true
-      build: pnpm run build
+    name: Release
+    runs-on: ubuntu-latest
+
     permissions:
       contents: write
       id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: "22"
+          cache: true
+          run-install: true
+
+      - name: Build
+        run: vp run build
+
+      - name: Pack Chrome extension
+        run: |
+          vp run chrome-extension#build --force
+          cd packages/chrome-extension/dist
+          zip -r ../is-github-bot-chrome-extension.zip .
+
+      - name: Generate GitHub Changelog
+        run: vpx changelogithub
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Chrome extension
+        uses: softprops/action-gh-release@v2
+        with:
+          files: packages/chrome-extension/is-github-bot-chrome-extension.zip
+
+      - name: Publish to NPM
+        run: vp pm publish -r --access public --no-git-checks

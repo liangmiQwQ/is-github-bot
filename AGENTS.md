@@ -26,4 +26,6 @@ The project is designed for opensource developers on GitHub, consider about it i
 
 Use existing dependencies and tools. Feel free to add dependencies. Don't reinvent the wheel. We should always use `cac` for cli command parsing and `picocolors` for output formatting, we should always use `fetch` api to start requests on the Internet.
 
+Chrome extension code belongs in `packages/chrome-extension`. Keep extension packaging based on `vp pack` / tsdown output; put manifest and static extension metadata in that package's `public` directory so the build copies them into `dist`, and zip `dist` in GitHub Actions.
+
 Add `.gitkeep` file when creating new empty directory
