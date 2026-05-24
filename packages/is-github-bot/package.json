@@ -24,6 +24,7 @@
     "access": "public"
   },
   "scripts": {
+    "is-github-bot": "tsx ./src/cli.ts",
     "build": "vp pack",
     "dev": "vp pack --watch",
     "test": "vp test",

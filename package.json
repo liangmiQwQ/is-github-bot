@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "is-github-bot": "vp run is-github-bot#is-github-bot",
     "ready": "vp check && vp run -r test && vp run -r build",
     "dev": "vp run website#dev",
     "build": "vp run -r build",
