@@ -1,7 +1,6 @@
 packages:
-  - apps/*
+  - website
   - packages/*
-  - tools/*
 
 catalogs:
   build:
