@@ -17,6 +17,7 @@ catalogs:
     bumpp: ^11.1.0
     cac: ^7.0.0
     picocolors: ^1.1.1
+    "@oxc-node/cli": ^0.1.0
   icon:
     "@iconify-json/ph": ^1.2.2
   type:
