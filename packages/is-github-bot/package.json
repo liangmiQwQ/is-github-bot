@@ -30,6 +30,10 @@
     "check": "vp check",
     "prepublishOnly": "vp run build"
   },
+  "dependencies": {
+    "cac": "catalog:cli",
+    "picocolors": "catalog:cli"
+  },
   "devDependencies": {
     "@types/node": "catalog:type",
     "@typescript/native-preview": "catalog:build",

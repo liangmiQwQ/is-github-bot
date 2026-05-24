@@ -6,6 +6,9 @@ export default defineConfig({
     dts: {
       tsgo: true,
     },
+    deps: {
+      neverBundle: ["node:child_process", "node:util"],
+    },
     exports: true,
     fixedExtension: true,
     platform: "neutral",
