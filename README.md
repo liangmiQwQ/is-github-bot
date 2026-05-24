@@ -1,29 +1,9 @@
-# Vite+ Monorepo Starter
+# **Is** that **GitHub** **Bot**?
 
-A starter for creating a Vite+ monorepo.
+A collection of tools to detect AI issue or PR spammers on Github.
 
-## Development
+Work in progress
 
-- Check everything is ready:
+## License
 
-```bash
-vp run ready
-```
-
-- Run the tests:
-
-```bash
-vp run -r test
-```
-
-- Build the monorepo:
-
-```bash
-vp run -r build
-```
-
-- Run the development server:
-
-```bash
-vp run dev
-```
+[MIT](./LICENSE) © Liang Mi
