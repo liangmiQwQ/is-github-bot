@@ -4,17 +4,31 @@ import { shallowRef } from "vue";
 
 interface GitHubProfileResponse {
   avatar_url: string;
+  bio: string | null;
+  company: string | null;
+  created_at: string;
+  followers: number;
+  following: number;
   blog: string | null;
   html_url: string;
   login: string;
+  location: string | null;
   name: string | null;
+  public_repos: number;
 }
 
 export interface BotCheckProfile {
   avatarUrl: string;
+  bio: string;
+  company: string;
+  createdAt: string;
+  followers: number;
+  following: number;
   homepage: string;
   login: string;
+  location: string;
   name: string;
+  publicRepos: number;
   url: string;
 }
 
@@ -93,9 +107,16 @@ async function fetchGitHubProfile(handle: string, token: string | undefined) {
 
   return {
     avatarUrl: profile.avatar_url,
+    bio: profile.bio ?? "",
+    company: profile.company ?? "",
+    createdAt: profile.created_at,
+    followers: profile.followers,
+    following: profile.following,
     homepage: normalizeHomepage(profile.blog),
     login: profile.login,
+    location: profile.location ?? "",
     name: profile.name ?? "",
+    publicRepos: profile.public_repos,
     url: profile.html_url,
   };
 }

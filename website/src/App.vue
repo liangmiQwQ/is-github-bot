@@ -29,7 +29,7 @@ const voidLogoSrc =
     href="https://void.cloud/"
     target="_blank"
     rel="noopener"
-    aria-label="Built on Void"
+    aria-label="Built with Void"
     fixed
     right-4
     bottom-4
@@ -41,16 +41,20 @@ const voidLogoSrc =
     text-white
     class="mix-blend-difference opacity-60 transition-opacity hover:opacity-100"
   >
-    <span font-label>Built on</span>
+    <span font-label>Built with</span>
     <img :src="voidLogoSrc" alt="Void" h-3 w-auto />
   </a>
   <main
     class="relative flex min-h-svh items-center justify-center bg-white px-5 pb-12 pt-28 text-black dark:bg-black dark:text-white max-sm:(items-start pt-24)"
   >
-    <TopActions :mode="mode" @toggle-mode="toggleMode" @open-settings="openSettings" />
+    <TopActions
+      :mode="mode ? 'dark' : 'light'"
+      @toggle-mode="toggleMode"
+      @open-settings="openSettings"
+    />
 
     <section
-      class="flex w-full max-w-180 flex-col items-center text-center gap-10 pb-15"
+      class="flex w-full max-w-200 flex-col items-center text-center gap-10 pb-15"
       aria-labelledby="site-title"
     >
       <h1
