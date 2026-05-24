@@ -19,16 +19,10 @@ const canSubmit = computed(() => query.value.trim().length > 0 && !props.loading
 </script>
 
 <template>
-  <section class="mt-8 w-full max-w-132" aria-label="GitHub account checker">
+  <section class="w-full max-w-230" aria-label="GitHub account checker">
     <form class="flex flex-col gap-2" @submit.prevent="emit('submit')">
-      <label
-        class="self-start text-sm text-neutral-600 font-500 dark:text-neutral-400"
-        for="github-handle"
-      >
-        GitHub username
-      </label>
       <div
-        class="flex h-11 items-center gap-2 border border-neutral-300 rounded-md bg-white px-2 focus-within:(border-black ring-2 ring-black/8) dark:(border-neutral-700 bg-black focus-within:border-white focus-within:ring-white/16) max-sm:h-auto max-sm:(flex-col items-stretch p-2)"
+        class="flex h-14 items-center gap-2 border border-neutral-300 rounded-xl bg-white px-4 focus-within:(border-black ring-2 ring-black/8) dark:(border-neutral-700 bg-black focus-within:border-white focus-within:ring-white/16) max-sm:h-auto max-sm:(flex-col items-stretch p-2)"
       >
         <span
           class="i-ph-magnifying-glass ml-1 shrink-0 text-neutral-500 max-sm:hidden dark:text-neutral-400"
