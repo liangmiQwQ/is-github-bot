@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "description": "Detect AI issue and pull request spammers on GitHub.",
   "permissions": ["storage"],
-  "host_permissions": ["https://github.com/*"],
+  "host_permissions": ["https://github.com/*", "https://api.github.com/*"],
+  "action": {
+    "default_popup": "popup.html"
+  },
   "background": {
     "service_worker": "background.js",
     "type": "module"

@@ -8,9 +8,18 @@
     "dev": "vp pack --watch",
     "check": "vp check"
   },
+  "dependencies": {
+    "is-github-bot": "workspace:*",
+    "vue": "catalog:build"
+  },
   "devDependencies": {
+    "@iconify-json/ph": "catalog:icon",
+    "@tsdown/css": "catalog:build",
     "@types/node": "catalog:type",
+    "@unocss/reset": "catalog:build",
     "typescript": "catalog:build",
+    "unocss": "catalog:build",
+    "unplugin-vue": "catalog:build",
     "vite-plus": "catalog:build"
   }
 }
