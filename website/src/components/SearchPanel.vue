@@ -22,7 +22,7 @@ const canSubmit = computed(() => query.value.trim().length > 0 && !props.loading
   <section class="w-full max-w-230" aria-label="GitHub account checker">
     <form class="flex flex-col gap-2" @submit.prevent="emit('submit')">
       <div
-        class="flex h-14 items-center gap-2 border border-neutral-200 rounded-xl bg-white px-4 focus-within:(border-neutral-300 ring-2 ring-black/8) duration-100 dark:(border-neutral-700 bg-black focus-within:border-neutral-700 focus-within:ring-white/16) max-sm:h-auto max-sm:(flex-col items-stretch p-2)"
+        class="flex md:h-14 h-28 items-center gap-2 border border-neutral-200 rounded-xl bg-white px-4 focus-within:(border-neutral-300 ring-2 ring-black/8) duration-100 dark:(border-neutral-700 bg-black focus-within:border-neutral-700 focus-within:ring-white/16) max-sm:h-25 max-sm:p-4 max-sm:(flex-col items-stretch p-2)"
       >
         <span
           class="i-ph-magnifying-glass ml-1 shrink-0 text-neutral-500 max-sm:hidden dark:text-neutral-400"
