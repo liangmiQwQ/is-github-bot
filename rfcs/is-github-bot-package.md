@@ -8,7 +8,7 @@ To make sure we can have the same check logic for different uses, like browser e
 
 The package should be put inside `packages/is-github-bot` directory and bundled with `vp pack`(tsdown) in ESM with fixed extension.
 
-It should have both a bin and a export for public functions, like core `isGithubBot` logic. The bin is wrapper of the export function, it can be treated as a local CLI which allows users to directly query a user's bot status.
+It should have both a bin and a export for public functions, like core `isGitHubBot` logic. The bin is wrapper of the export function, it can be treated as a local CLI which allows users to directly query a user's bot status.
 
 ### Interface
 
@@ -25,7 +25,7 @@ This function should run check logic to find whether this account with that hand
 
 The return value is a coarse-grained result derived from internal scores and early-exit rules.
 
-Return undefined if this account is a Github app bot or name ends with `bot`/`[bot]`, like `github-actions`, `renovate`
+Return undefined if this account is a Github App bot account or name ends with `bot`/`[bot]`, like `github-actions`, `renovate`
 
 #### `IsGitHubBotOption` interface
 
