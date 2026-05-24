@@ -45,7 +45,7 @@ The CLI is mainly for users directly use, so we do not need consider too much ab
 
 ### Check logic
 
-We build several checks for an account. If we've found obvious evidence before finishing all the checks, we can skip the rest of the checks and return `bot` to save API usage. For the case
+We build several checks for an account. If we've found obvious evidence before finishing all the checks, we can skip the rest of the checks and return `bot` to save API usage.
 
 We only check an account's data within six months.
 
@@ -55,7 +55,7 @@ A normal human account usually creates less than 10 repos in a day, while an AI 
 
 #### The merge rate of PR (High)
 
-Mostly, we hope an account's PR merge radio can be higher than 50%, if its PR merge radio is lower than 50%, The probability that he is an AI should grow as a quadratic function.
+Mostly, we hope an account's PR merge radio can be higher than 50%, if its PR merge radio is lower than 50%, The probability that he is an AI should grow as a quadratic function. At the same time, if the account has a high PR merge ratio, we can directly treat it as human.
 
 This check should only for the user who creates more than 10 PRs in the past six months.
 
@@ -69,7 +69,7 @@ Except: its own projects.
 
 #### PR description check (Medium)
 
-If you can find `## Validation` usually appears in its PR description, it can be a robot PR.
+If you find that `# Summary` `# Validation` usually appear in its PRs' description, it can be a robot PR.
 
 Except: its own projects.
 
