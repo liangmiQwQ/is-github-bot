@@ -8,9 +8,6 @@ import unoConfig from "./uno.config.ts";
 
 export default defineConfig({
   pack: {
-    alias: {
-      "is-github-bot": new URL("../is-github-bot/src/index.ts", import.meta.url).pathname,
-    },
     clean: true,
     deps: {
       alwaysBundle: ["is-github-bot", "vue"],

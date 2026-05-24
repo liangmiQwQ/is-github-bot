@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vp pack",
+    "build": "vp run is-github-bot#build && vp pack",
     "dev": "vp pack --watch",
     "check": "vp check"
   },
