@@ -2,6 +2,12 @@ packages:
   - website
   - packages/*
 
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true
+  sharp: true
+  workerd: true
+
 catalogs:
   build:
     "@vitejs/plugin-vue": ^6.0.3
@@ -12,7 +18,9 @@ catalogs:
     typescript: ^6.0.3
     "@typescript/native-preview": 7.0.0-dev.20260509.2
     unocss: ^66.5.9
+    void: latest
     vue: ^3.5.25
+    "@vueuse/core": ^14.1.0
   cli:
     bumpp: ^11.1.0
     cac: ^7.0.0

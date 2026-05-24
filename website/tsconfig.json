@@ -11,6 +11,9 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
+    "paths": {
+      "is-github-bot": ["../packages/is-github-bot/src/index.ts"]
+    },
     "noEmit": true,
 
     /* Linting */
@@ -19,5 +22,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", "../packages/is-github-bot/src/index.ts"]
 }
