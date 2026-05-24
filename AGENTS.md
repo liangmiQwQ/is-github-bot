@@ -1,16 +1,29 @@
-<!--VITE PLUS START-->
+# `is-github-bot` Agent Guide
 
-# Using Vite+, the Unified Toolchain for the Web
+`is-github-bot` is a collection of tools to detect AI issue or PR spammers on Github.
 
-This project is using Vite+, a unified toolchain built on top of Vite, Rolldown, Vitest, tsdown, Oxlint, Oxfmt, and Vite Task. Vite+ wraps runtime management, package management, and frontend tooling in a single global CLI called `vp`. Vite+ is distinct from Vite, and it invokes Vite through `vp dev` and `vp build`. Run `vp help` to print a list of commands and `vp <command> --help` for information about a specific command.
+Designed for opensource maintainers on GitHub.
 
-Docs are local at `node_modules/vite-plus/docs` or online at https://viteplus.dev/guide/.
+## Product Features
 
-## Review Checklist
+The core feature of the project is maintaining a logic to check whether an GitHub account is a bot. Most of the time, there are several distinct characteristics to help us distinguish.
 
-- [ ] Run `vp install` after pulling remote changes and before getting started.
-- [ ] Run `vp check` and `vp test` to format, lint, type check and test changes.
-- [ ] Check if there are `vite.config.ts` tasks or `package.json` scripts necessary for validation, run via `vp run <script>`.
-- [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
+If you want detailed information about some feature, view [RFCS](/rfcs) directory.
 
-<!--VITE PLUS END-->
+## Rule
+
+Vite+ is used as the project manager. Use `vp install` to install dependencies, use `pnpm-workspace.yaml` to categorize dependencies. Use `vp run` command to run commands in `package.json`.
+
+Run `vp check` (lint and format) and `vp test`(vitest) after you make changes.
+
+Keep AGENTS.md updated with the project codebase. Consider if there is need to modify AGENTS.md after your changes. Don't store meaningless things like project structure or project status in AGENTS.md.
+
+Never use emoji no matter where.
+
+Keep code functional. Never use classes. Write simple code and make function reusable if possible. Use Unix philosophy to design your code (Every function should only do one thing and should not be too long or complex).
+
+The project is designed for opensource developers on GitHub, consider about it if you need to make any decision. Do not import features out of its scope.
+
+Use existing dependencies and tools. Feel free to add dependencies. Don't reinvent the wheel. We should always use `cac` for cli command parsing and `picocolors` for output formatting, we should always use `fetch` api to start requests on the Internet.
+
+Add `.gitkeep` file when creating new empty directory
