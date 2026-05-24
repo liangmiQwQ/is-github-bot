@@ -1,0 +1,16 @@
+{
+  "name": "@is-github-bot/chrome-extension",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "check": "vp check"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:type",
+    "typescript": "catalog:build",
+    "vite-plus": "catalog:build"
+  }
+}
