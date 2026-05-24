@@ -7,12 +7,56 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-strong: #f1f5f9;
+  --text: #0f172a;
+  --muted: #64748b;
+  --line: #cbd5e1;
+  --line-soft: #e2e8f0;
+  --primary: #334155;
+  --primary-strong: #0f172a;
+  --primary-text: #ffffff;
+  --shadow: 0 24px 80px rgb(15 23 42 / 14%);
+  --danger: #b91c1c;
+  --success: #15803d;
+  --warning: #b45309;
+  --unknown: #475569;
+}
+
+:root[data-theme="dark"] {
+  color: #e2e8f0;
+  background: #020617;
+  --bg: #020617;
+  --panel: #0f172a;
+  --panel-strong: #1e293b;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --line: #334155;
+  --line-soft: #1e293b;
+  --primary: #cbd5e1;
+  --primary-strong: #f8fafc;
+  --primary-text: #020617;
+  --shadow: 0 24px 80px rgb(0 0 0 / 38%);
+  --danger: #f87171;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --unknown: #cbd5e1;
 }
 
 body {
+  min-width: 320px;
   margin: 0;
+  background:
+    radial-gradient(circle at top left, rgb(148 163 184 / 22%), transparent 34rem), var(--bg);
 }
 
-.shell {
-  min-height: 100svh;
+button,
+input {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
