@@ -13,5 +13,8 @@ export default defineConfig({
       ),
     },
   },
-  plugins: [voidPlugin(), vue(), UnoCSS()],
+  plugins: [...voidPlugin(), vue(), UnoCSS()],
+  fmt: {
+    ignorePatterns: [".void/*"],
+  },
 });
