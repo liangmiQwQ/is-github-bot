@@ -1,17 +1,10 @@
-import { useColorMode as useVueUseColorMode } from "@vueuse/core";
-import { computed } from "vue";
-
-const STORAGE_KEY = "is-github-bot-color-mode";
+import { useDark } from "@vueuse/core";
 
 export function useColorMode() {
-  const colorMode = useVueUseColorMode({
-    storageKey: STORAGE_KEY,
-  });
-  const mode = computed(() => (colorMode.value === "dark" ? "dark" : "light"));
-
-  function toggleMode() {
-    colorMode.value = mode.value === "dark" ? "light" : "dark";
-  }
+  const mode = useDark();
+  const toggleMode = () => {
+    mode.value = !mode.value;
+  };
 
   return {
     mode,
