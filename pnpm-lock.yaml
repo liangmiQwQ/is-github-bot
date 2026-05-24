@@ -1227,6 +1227,7 @@ packages:
       '@emnapi/core': ^1.7.1
       '@emnapi/runtime': ^1.7.1
 
+<<<<<<< HEAD
   '@noble/ciphers@2.2.0':
     resolution: {integrity: sha512-Z6pjIZ/8IJcCGzb2S/0Px5J81yij85xASuk1teLNeg75bfT07MV3a/O2Mtn1I2se43k3lkVEcFaR10N4cgQcZA==}
     engines: {node: '>= 20.19.0'}
@@ -1239,6 +1240,8 @@ packages:
     resolution: {integrity: sha512-/UhIkaZgPutTFmQ7RnIJGgDXZmtEJ7Dvi86xNTFWcnRxVRNk/aotsqDJYeEvDP+FSMB2SdW+pQzNMcWP0rwuNA==}
     engines: {node: '>=14'}
 
+=======
+>>>>>>> 49bf173 (feat(is-github-bot): add core package detection (#7))
   '@oxc-node/cli@0.1.0':
     resolution: {integrity: sha512-SH300Zktby6X2zwaFYKftQAHSZbhX75kluHm+4KEIusGUlPD7QWi19qYKID72WBowahpUTY2vNPVxZV/bfWbEQ==}
     hasBin: true
@@ -3886,12 +3889,15 @@ snapshots:
       '@tybys/wasm-util': 0.10.2
     optional: true
 
+<<<<<<< HEAD
   '@noble/ciphers@2.2.0': {}
 
   '@noble/hashes@2.2.0': {}
 
   '@opentelemetry/semantic-conventions@1.41.1': {}
 
+=======
+>>>>>>> 49bf173 (feat(is-github-bot): add core package detection (#7))
   '@oxc-node/cli@0.1.0':
     dependencies:
       '@oxc-node/core': 0.1.0
