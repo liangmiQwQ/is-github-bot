@@ -2,6 +2,8 @@
 
 A collection of tools to detect AI issue or PR spammers on Github.
 
+Inspired by [@MengXi-ream](https://github.com/MengXi-ream) and [Read Frog's GitHub CI](https://github.com/mengxi-ream/read-frog/blob/239f4910f576a364479a6d1ed9676aa07ce415e4/.github/scripts/contributor-trust/run.js) maintained by him.
+
 ## Features
 
 - Checks a GitHub user with the public GitHub API.
