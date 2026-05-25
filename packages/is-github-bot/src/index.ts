@@ -56,35 +56,40 @@ export async function isGitHubBot(
   if (!user || user.type === "Bot") return undefined;
 
   const since = new Date(Date.now() - SIX_MONTHS_IN_MS).toISOString().slice(0, 10);
-  const [repos, mergedPullRequests, unmergedPullRequests] = await Promise.all([
-    fetchRecentRepos(context, normalizedHandle, since),
-    searchGitHub<GitHubIssue>(
+  const repos = await fetchRecentRepos(context, normalizedHandle, since);
+  const repoSignal = checkRepositoryCreation(repos);
+  if (repoSignal === "bot") return "bot";
+
+  const [pullRequests, mergedPullRequests] = await Promise.all([
+    searchGitHub(
+      context,
+      `author:${normalizedHandle} type:pr created:>=${since} -user:${normalizedHandle}`,
+    ),
+    searchGitHub(
       context,
       `author:${normalizedHandle} type:pr is:merged created:>=${since} -user:${normalizedHandle}`,
     ),
+  ]);
+
+  let score = repoSignal;
+
+  const prSignal = checkPullRequestActivity(pullRequests, mergedPullRequests);
+  if (prSignal === "bot") return "bot";
+  if (prSignal === "human") return "human";
+  score += prSignal;
+
+  const [unmergedPullRequests, issues] = await Promise.all([
     searchGitHub<GitHubIssue>(
       context,
       `author:${normalizedHandle} type:pr -is:merged created:>=${since} -user:${normalizedHandle}`,
       100,
     ),
+    searchGitHub<GitHubIssue>(
+      context,
+      `author:${normalizedHandle} type:issue created:>=${since} -user:${normalizedHandle}`,
+      100,
+    ),
   ]);
-
-  let score = 0;
-
-  const repoSignal = checkRepositoryCreation(repos);
-  if (repoSignal === "bot") return "bot";
-  score += repoSignal;
-
-  const prSignal = checkPullRequestActivity(mergedPullRequests, unmergedPullRequests);
-  if (prSignal === "bot") return "bot";
-  if (prSignal === "human") return "human";
-  score += prSignal;
-
-  const issues = await searchGitHub<GitHubIssue>(
-    context,
-    `author:${normalizedHandle} type:issue created:>=${since} -user:${normalizedHandle}`,
-    100,
-  );
   const activitySignal = await checkIssueAndPullRequestActivity(
     context,
     unmergedPullRequests,
@@ -195,32 +200,26 @@ async function fetchRecentRepos(
 }
 
 function checkPullRequestActivity(
-  mergedPullRequests: GitHubSearchResponse<GitHubIssue>,
-  unmergedPullRequests: GitHubSearchResponse<GitHubIssue>,
+  pullRequests: GitHubSearchResponse<unknown>,
+  mergedPullRequests: GitHubSearchResponse<unknown>,
 ) {
-  const totalPullRequests = mergedPullRequests.total_count + unmergedPullRequests.total_count;
+  const totalPullRequests = pullRequests.total_count;
 
   if (totalPullRequests <= 10) return 0;
 
-  const unmergedByDay = countByDay(
-    unmergedPullRequests.items,
-    (pullRequest) => pullRequest.created_at,
-  );
-  const maxUnmergedInDay = Math.max(0, ...unmergedByDay.values());
   const mergeRate = mergedPullRequests.total_count / totalPullRequests;
-
-  if (maxUnmergedInDay >= 30) return "bot" as const;
+  const unmergedPullRequests = Math.max(0, totalPullRequests - mergedPullRequests.total_count);
 
   if (mergeRate >= 0.8 && totalPullRequests >= 20) return "human" as const;
 
-  if (unmergedPullRequests.total_count >= 80) return "bot" as const;
+  if (unmergedPullRequests >= 80) return "bot" as const;
 
   if (mergeRate <= 0.2 && totalPullRequests >= 20) return "bot" as const;
 
   let score = 0;
 
-  if (unmergedPullRequests.total_count >= 40 || maxUnmergedInDay >= 15) score += 45;
-  else if (unmergedPullRequests.total_count >= 20 || maxUnmergedInDay >= 8) score += 25;
+  if (unmergedPullRequests >= 40) score += 45;
+  else if (unmergedPullRequests >= 20) score += 25;
 
   if (mergeRate < 0.55) score += Math.ceil(((0.55 - mergeRate) / 0.55) ** 2 * 35);
 
