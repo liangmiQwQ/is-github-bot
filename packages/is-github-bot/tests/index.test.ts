@@ -46,20 +46,13 @@ test("returns bot for extreme repository creation bursts", async () => {
 
 test("returns human for high pull request merge rates", async () => {
   vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
-  const unmergedPullRequests = Array.from({ length: 46 }, (_, index) => ({
-    body: null,
-    created_at: `2026-05-${String((index % 20) + 1).padStart(2, "0")}T00:00:00Z`,
-    repository_url: "https://api.github.com/repos/example/project",
-  }));
-
   mockGitHubFetch((url) => {
     if (url.includes("/users/maintainer/repos")) return [];
 
-    if (url.includes("/search/issues") && url.includes("-is%3Amerged"))
-      return searchResponse(46, unmergedPullRequests);
-
     if (url.includes("/search/issues") && url.includes("is%3Amerged"))
       return searchResponse(413, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(459, []);
 
     if (url.includes("/search/issues") && url.includes("type%3Aissue"))
       return searchResponse(0, []);
@@ -73,26 +66,20 @@ test("returns human for high pull request merge rates", async () => {
   await expect(isGitHubBot("maintainer")).resolves.toBe("human");
 });
 
-test("returns bot for many unmerged generated pull requests", async () => {
+test("returns bot for low pull request merge rates", async () => {
   vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
-  const generatedPullRequests = Array.from({ length: 50 }, () => ({
-    body: "# Summary\n\nGenerated fix.\n\n# Validation\n\nTests.",
-    created_at: "2026-05-01T00:00:00Z",
-    repository_url: "https://api.github.com/repos/example/project",
-  }));
-
   mockGitHubFetch((url) => {
     if (url.includes("/users/suspicious/repos")) return [];
 
     if (url.includes("/search/issues") && url.includes("-is%3Amerged"))
-      return searchResponse(50, generatedPullRequests);
+      return searchResponse(50, []);
 
     if (url.includes("/search/issues") && url.includes("is%3Amerged")) return searchResponse(8, []);
 
+    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(58, []);
+
     if (url.includes("/search/issues") && url.includes("type%3Aissue"))
       return searchResponse(0, []);
-
-    if (url.includes("/search/issues")) return searchResponse(20, []);
 
     return {
       login: "suspicious",
@@ -103,11 +90,78 @@ test("returns bot for many unmerged generated pull requests", async () => {
   await expect(isGitHubBot("suspicious")).resolves.toBe("bot");
 });
 
-test("returns bot for a single extreme unmerged pull request day", async () => {
+test("returns bot for generated pull request body patterns", async () => {
   vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
-  const unmergedPullRequests = Array.from({ length: 30 }, () => ({
+  const generatedPullRequests = Array.from({ length: 20 }, () => ({
+    body: "# Summary\n\nGenerated fix.\n\n# Validation\n\nTests.",
+    created_at: "2026-05-01T00:00:00Z",
+    repository_url: "https://api.github.com/repos/example/project",
+  }));
+
+  mockGitHubFetch((url) => {
+    if (url.includes("/users/generated/repos")) return [];
+
+    if (url.includes("/search/issues") && url.includes("-is%3Amerged"))
+      return searchResponse(25, generatedPullRequests);
+
+    if (url.includes("/search/issues") && url.includes("is%3Amerged"))
+      return searchResponse(25, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(50, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Aissue"))
+      return searchResponse(0, []);
+
+    return {
+      login: "generated",
+      type: "User",
+    };
+  });
+
+  await expect(isGitHubBot("generated")).resolves.toBe("bot");
+});
+
+test("returns bot for a single extreme issue and pull request day", async () => {
+  vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
+  const pullRequests = Array.from({ length: 40 }, () => ({
     body: null,
     created_at: "2026-05-01T00:00:00Z",
+    repository_url: "https://api.github.com/repos/example/project",
+  }));
+  const issues = Array.from({ length: 20 }, () => ({
+    body: null,
+    created_at: "2026-05-01T00:00:00Z",
+    repository_url: "https://api.github.com/repos/example/project",
+  }));
+
+  mockGitHubFetch((url) => {
+    if (url.includes("/users/burst/repos")) return [];
+
+    if (url.includes("/search/issues") && url.includes("-is%3Amerged"))
+      return searchResponse(40, pullRequests);
+
+    if (url.includes("/search/issues") && url.includes("is%3Amerged"))
+      return searchResponse(40, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(80, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Aissue"))
+      return searchResponse(20, issues);
+
+    return {
+      login: "burst",
+      type: "User",
+    };
+  });
+
+  await expect(isGitHubBot("burst")).resolves.toBe("bot");
+});
+
+test("does not score dispersed unmerged pull request totals", async () => {
+  vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
+  const unmergedPullRequests = Array.from({ length: 30 }, (_, index) => ({
+    body: null,
+    created_at: `2026-05-${String((index % 10) + 1).padStart(2, "0")}T00:00:00Z`,
     repository_url: "https://api.github.com/repos/example/project",
   }));
 
@@ -120,6 +174,8 @@ test("returns bot for a single extreme unmerged pull request day", async () => {
     if (url.includes("/search/issues") && url.includes("is%3Amerged"))
       return searchResponse(20, []);
 
+    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(50, []);
+
     if (url.includes("/search/issues") && url.includes("type%3Aissue"))
       return searchResponse(0, []);
 
@@ -129,14 +185,118 @@ test("returns bot for a single extreme unmerged pull request day", async () => {
     };
   });
 
-  await expect(isGitHubBot("burst")).resolves.toBe("bot");
+  await expect(isGitHubBot("burst")).resolves.toBe("human");
+});
+
+test("scores concentrated unmerged pull request frequency", async () => {
+  vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
+  const unmergedPullRequests = Array.from({ length: 8 }, () => ({
+    body: null,
+    created_at: "2026-05-01T00:00:00Z",
+    repository_url: "https://api.github.com/repos/example/project",
+  }));
+
+  mockGitHubFetch((url) => {
+    if (url.includes("/users/frequent/repos")) return [];
+
+    if (url.includes("/search/issues") && url.includes("-is%3Amerged"))
+      return searchResponse(30, unmergedPullRequests);
+
+    if (url.includes("/search/issues") && url.includes("is%3Amerged"))
+      return searchResponse(20, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(50, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Aissue"))
+      return searchResponse(0, []);
+
+    return {
+      login: "frequent",
+      type: "User",
+    };
+  });
+
+  await expect(isGitHubBot("frequent")).resolves.toBe("suspicious");
+});
+
+test("excludes repositories owned by the checked user", async () => {
+  vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
+  const searchUrls: string[] = [];
+
+  mockGitHubFetch((url) => {
+    if (url.includes("/users/self/repos")) return [];
+
+    if (url.includes("/search/issues")) {
+      searchUrls.push(url);
+      return searchResponse(0, []);
+    }
+
+    return {
+      login: "self",
+      type: "User",
+    };
+  });
+
+  await expect(isGitHubBot("self")).resolves.toBe("human");
+  expect(searchUrls).toHaveLength(4);
+  expect(searchUrls.every((url) => url.includes("-user%3Aself"))).toBe(true);
+});
+
+test("lets member organization exclusion override raw bot signals", async () => {
+  vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
+  const orgItems = Array.from({ length: 90 }, () => ({
+    body: null,
+    created_at: "2026-05-01T00:00:00Z",
+    repository_url: "https://api.github.com/repos/matesedu/project",
+  }));
+
+  mockGitHubFetch((url) => {
+    if (url.includes("/users/member/repos")) return [];
+
+    if (url.includes("/orgs/matesedu/members/member")) return new Response(null, { status: 302 });
+
+    if (url.includes("/orgs/matesedu/public_members/member"))
+      return new Response(null, { status: 204 });
+
+    if (url.includes("-org%3Amatesedu") && url.includes("-is%3Amerged"))
+      return searchResponse(5, []);
+
+    if (url.includes("-org%3Amatesedu") && url.includes("is%3Amerged"))
+      return searchResponse(45, []);
+
+    if (url.includes("-org%3Amatesedu") && url.includes("type%3Apr")) return searchResponse(50, []);
+
+    if (url.includes("-org%3Amatesedu") && url.includes("type%3Aissue"))
+      return searchResponse(0, []);
+
+    if (url.includes("/search/issues") && url.includes("-is%3Amerged"))
+      return searchResponse(90, orgItems);
+
+    if (url.includes("/search/issues") && url.includes("is%3Amerged"))
+      return searchResponse(10, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(100, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Aissue"))
+      return searchResponse(0, []);
+
+    return {
+      login: "member",
+      type: "User",
+    };
+  });
+
+  await expect(isGitHubBot("member")).resolves.toBe("human");
 });
 
 function mockGitHubFetch(getBody: (url: string) => unknown) {
   vi.stubGlobal(
     "fetch",
     vi.fn(async (input: RequestInfo | URL) => {
-      return Response.json(getBody(getRequestUrl(input)));
+      const body = getBody(getRequestUrl(input));
+      if (body instanceof Response) return body;
+
+      return Response.json(body);
     }),
   );
 }

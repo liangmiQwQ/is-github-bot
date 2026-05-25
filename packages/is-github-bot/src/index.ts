@@ -32,6 +32,7 @@ interface GitHubRepository {
 
 const GITHUB_API = "https://api.github.com";
 const SIX_MONTHS_IN_MS = 183 * 24 * 60 * 60 * 1000;
+const MEMBER_ORG_ACTIVITY_THRESHOLD = 20;
 const AUTOMATION_HANDLES = new Set([
   "dependabot",
   "dependabot-preview",
@@ -56,39 +57,61 @@ export async function isGitHubBot(
   if (!user || user.type === "Bot") return undefined;
 
   const since = new Date(Date.now() - SIX_MONTHS_IN_MS).toISOString().slice(0, 10);
-  const [repos, mergedPullRequests, unmergedPullRequests] = await Promise.all([
-    fetchRecentRepos(context, normalizedHandle, since),
-    searchGitHub<GitHubIssue>(
+  const repos = await fetchRecentRepos(context, normalizedHandle, since);
+  const repoSignal = checkRepositoryCreation(repos);
+  if (repoSignal === "bot") return "bot";
+
+  let searchExclusion = createSearchExclusion(normalizedHandle);
+  const [pullRequests, mergedPullRequests] = await Promise.all([
+    searchGitHub(
       context,
-      `author:${normalizedHandle} type:pr is:merged created:>=${since} -user:${normalizedHandle}`,
+      `author:${normalizedHandle} type:pr created:>=${since} ${searchExclusion}`,
     ),
-    searchGitHub<GitHubIssue>(
+    searchGitHub(
       context,
-      `author:${normalizedHandle} type:pr -is:merged created:>=${since} -user:${normalizedHandle}`,
-      100,
+      `author:${normalizedHandle} type:pr is:merged created:>=${since} ${searchExclusion}`,
     ),
   ]);
 
-  let score = 0;
+  let score = repoSignal;
+  const rawPrSignal = checkPullRequestActivity(pullRequests, mergedPullRequests);
+  if (rawPrSignal === "human") return "human";
 
-  const repoSignal = checkRepositoryCreation(repos);
-  if (repoSignal === "bot") return "bot";
-  score += repoSignal;
+  const [unmergedPullRequests, issues] = await Promise.all([
+    searchGitHub<GitHubIssue>(
+      context,
+      `author:${normalizedHandle} type:pr -is:merged created:>=${since} ${searchExclusion}`,
+      100,
+    ),
+    searchGitHub<GitHubIssue>(
+      context,
+      `author:${normalizedHandle} type:issue created:>=${since} ${searchExclusion}`,
+      100,
+    ),
+  ]);
+  const memberOrgs = await findHighActivityMemberOrgs(context, normalizedHandle, [
+    ...unmergedPullRequests.items,
+    ...issues.items,
+  ]);
+  const [
+    filteredPullRequests,
+    filteredMergedPullRequests,
+    filteredUnmergedPullRequests,
+    filteredIssues,
+  ] =
+    memberOrgs.length === 0
+      ? [pullRequests, mergedPullRequests, unmergedPullRequests, issues]
+      : await fetchActivityWithoutMemberOrgs(context, normalizedHandle, since, memberOrgs);
 
-  const prSignal = checkPullRequestActivity(mergedPullRequests, unmergedPullRequests);
+  const prSignal = checkPullRequestActivity(filteredPullRequests, filteredMergedPullRequests);
   if (prSignal === "bot") return "bot";
   if (prSignal === "human") return "human";
   score += prSignal;
 
-  const issues = await searchGitHub<GitHubIssue>(
-    context,
-    `author:${normalizedHandle} type:issue created:>=${since} -user:${normalizedHandle}`,
-    100,
-  );
   const activitySignal = await checkIssueAndPullRequestActivity(
     context,
-    unmergedPullRequests,
-    issues,
+    filteredUnmergedPullRequests,
+    filteredIssues,
   );
   if (activitySignal === "bot") return "bot";
   score += activitySignal;
@@ -154,6 +177,109 @@ async function searchGitHub<T>(
   );
 }
 
+function createSearchExclusion(handle: string, orgs: string[] = []) {
+  return [`-user:${handle}`, ...orgs.map((org) => `-org:${org}`)].join(" ");
+}
+
+async function fetchActivityWithoutMemberOrgs(
+  context: ReturnType<typeof createGitHubContext>,
+  handle: string,
+  since: string,
+  memberOrgs: string[],
+) {
+  const searchExclusion = createSearchExclusion(handle, memberOrgs);
+
+  const [pullRequests, mergedPullRequests] = await Promise.all([
+    searchGitHub(context, `author:${handle} type:pr created:>=${since} ${searchExclusion}`),
+    searchGitHub(
+      context,
+      `author:${handle} type:pr is:merged created:>=${since} ${searchExclusion}`,
+    ),
+  ]);
+  const [unmergedPullRequests, issues] = await Promise.all([
+    searchGitHub<GitHubIssue>(
+      context,
+      `author:${handle} type:pr -is:merged created:>=${since} ${searchExclusion}`,
+      100,
+    ),
+    searchGitHub<GitHubIssue>(
+      context,
+      `author:${handle} type:issue created:>=${since} ${searchExclusion}`,
+      100,
+    ),
+  ]);
+
+  return [pullRequests, mergedPullRequests, unmergedPullRequests, issues] as const;
+}
+
+async function findHighActivityMemberOrgs(
+  context: ReturnType<typeof createGitHubContext>,
+  handle: string,
+  items: GitHubIssue[],
+) {
+  const ownerCounts = countByRepositoryOwner(items);
+  const candidateOrgs = [...ownerCounts]
+    .filter(([owner, count]) => owner !== handle && count >= MEMBER_ORG_ACTIVITY_THRESHOLD)
+    .map(([owner]) => owner);
+
+  const memberships = await Promise.all(
+    candidateOrgs.map(async (org) => ({
+      org,
+      isMember: await isOrganizationMember(context, org, handle),
+    })),
+  );
+
+  return memberships
+    .filter((membership) => membership.isMember)
+    .map((membership) => membership.org);
+}
+
+function countByRepositoryOwner(items: GitHubIssue[]) {
+  const counts = new Map<string, number>();
+
+  for (const item of items) {
+    const owner = getRepositoryOwner(item.repository_url);
+    if (!owner) continue;
+
+    counts.set(owner, (counts.get(owner) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+function getRepositoryOwner(repositoryUrl: string) {
+  const repositoryName = repositoryUrl.replace(`${GITHUB_API}/repos/`, "");
+  return repositoryName.split("/")[0]?.toLowerCase();
+}
+
+async function isOrganizationMember(
+  context: ReturnType<typeof createGitHubContext>,
+  org: string,
+  handle: string,
+) {
+  const response = await fetch(
+    `${GITHUB_API}/orgs/${encodeURIComponent(org)}/members/${encodeURIComponent(handle)}`,
+    {
+      headers: context.headers,
+      redirect: "manual",
+    },
+  );
+
+  if (response.status === 204) return true;
+
+  if (response.status !== 302) return false;
+
+  const publicResponse = await fetch(
+    `${GITHUB_API}/orgs/${encodeURIComponent(org)}/public_members/${encodeURIComponent(handle)}`,
+    {
+      headers: context.headers,
+      redirect: "manual",
+    },
+  );
+
+  return publicResponse.status === 204;
+}
+
 function checkRepositoryCreation(repos: GitHubRepo[]) {
   const reposByDay = countByDay(repos, (repo) => repo.created_at);
   const forksByDay = countByDay(
@@ -195,32 +321,20 @@ async function fetchRecentRepos(
 }
 
 function checkPullRequestActivity(
-  mergedPullRequests: GitHubSearchResponse<GitHubIssue>,
-  unmergedPullRequests: GitHubSearchResponse<GitHubIssue>,
+  pullRequests: GitHubSearchResponse<unknown>,
+  mergedPullRequests: GitHubSearchResponse<unknown>,
 ) {
-  const totalPullRequests = mergedPullRequests.total_count + unmergedPullRequests.total_count;
+  const totalPullRequests = pullRequests.total_count;
 
   if (totalPullRequests <= 10) return 0;
 
-  const unmergedByDay = countByDay(
-    unmergedPullRequests.items,
-    (pullRequest) => pullRequest.created_at,
-  );
-  const maxUnmergedInDay = Math.max(0, ...unmergedByDay.values());
   const mergeRate = mergedPullRequests.total_count / totalPullRequests;
 
-  if (maxUnmergedInDay >= 30) return "bot" as const;
-
   if (mergeRate >= 0.8 && totalPullRequests >= 20) return "human" as const;
-
-  if (unmergedPullRequests.total_count >= 80) return "bot" as const;
 
   if (mergeRate <= 0.2 && totalPullRequests >= 20) return "bot" as const;
 
   let score = 0;
-
-  if (unmergedPullRequests.total_count >= 40 || maxUnmergedInDay >= 15) score += 45;
-  else if (unmergedPullRequests.total_count >= 20 || maxUnmergedInDay >= 8) score += 25;
 
   if (mergeRate < 0.55) score += Math.ceil(((0.55 - mergeRate) / 0.55) ** 2 * 35);
 
@@ -235,13 +349,19 @@ async function checkIssueAndPullRequestActivity(
   const recentItems = [...pullRequests.items, ...issues.items];
   const dailyActivity = countByDay(recentItems, (item) => item.created_at);
   const maxDailyActivity = Math.max(0, ...dailyActivity.values());
+  const unmergedPullRequestsByDay = countByDay(pullRequests.items, (item) => item.created_at);
+  const maxDailyUnmergedPullRequests = Math.max(0, ...unmergedPullRequestsByDay.values());
 
-  if (maxDailyActivity >= 60 || issues.total_count >= 120) return "bot" as const;
+  if (maxDailyActivity >= 60 || maxDailyUnmergedPullRequests >= 30 || issues.total_count >= 120)
+    return "bot" as const;
 
   let score = 0;
 
   if (maxDailyActivity >= 25 || issues.total_count >= 60) score += 35;
   else if (maxDailyActivity >= 12 || issues.total_count >= 30) score += 20;
+
+  if (maxDailyUnmergedPullRequests >= 15) score += 45;
+  else if (maxDailyUnmergedPullRequests >= 8) score += 25;
 
   score += scorePullRequestBodies(pullRequests.items);
   score += await scoreRepositorySpan(context, recentItems);
