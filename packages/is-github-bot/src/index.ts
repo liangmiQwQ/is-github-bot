@@ -32,6 +32,7 @@ interface GitHubRepository {
 
 const GITHUB_API = "https://api.github.com";
 const SIX_MONTHS_IN_MS = 183 * 24 * 60 * 60 * 1000;
+const MEMBER_ORG_ACTIVITY_THRESHOLD = 20;
 const AUTOMATION_HANDLES = new Set([
   "dependabot",
   "dependabot-preview",
@@ -60,40 +61,57 @@ export async function isGitHubBot(
   const repoSignal = checkRepositoryCreation(repos);
   if (repoSignal === "bot") return "bot";
 
+  let searchExclusion = createSearchExclusion(normalizedHandle);
   const [pullRequests, mergedPullRequests] = await Promise.all([
     searchGitHub(
       context,
-      `author:${normalizedHandle} type:pr created:>=${since} -user:${normalizedHandle}`,
+      `author:${normalizedHandle} type:pr created:>=${since} ${searchExclusion}`,
     ),
     searchGitHub(
       context,
-      `author:${normalizedHandle} type:pr is:merged created:>=${since} -user:${normalizedHandle}`,
+      `author:${normalizedHandle} type:pr is:merged created:>=${since} ${searchExclusion}`,
     ),
   ]);
 
   let score = repoSignal;
-
-  const prSignal = checkPullRequestActivity(pullRequests, mergedPullRequests);
-  if (prSignal === "bot") return "bot";
-  if (prSignal === "human") return "human";
-  score += prSignal;
+  const rawPrSignal = checkPullRequestActivity(pullRequests, mergedPullRequests);
+  if (rawPrSignal === "human") return "human";
 
   const [unmergedPullRequests, issues] = await Promise.all([
     searchGitHub<GitHubIssue>(
       context,
-      `author:${normalizedHandle} type:pr -is:merged created:>=${since} -user:${normalizedHandle}`,
+      `author:${normalizedHandle} type:pr -is:merged created:>=${since} ${searchExclusion}`,
       100,
     ),
     searchGitHub<GitHubIssue>(
       context,
-      `author:${normalizedHandle} type:issue created:>=${since} -user:${normalizedHandle}`,
+      `author:${normalizedHandle} type:issue created:>=${since} ${searchExclusion}`,
       100,
     ),
   ]);
+  const memberOrgs = await findHighActivityMemberOrgs(context, normalizedHandle, [
+    ...unmergedPullRequests.items,
+    ...issues.items,
+  ]);
+  const [
+    filteredPullRequests,
+    filteredMergedPullRequests,
+    filteredUnmergedPullRequests,
+    filteredIssues,
+  ] =
+    memberOrgs.length === 0
+      ? [pullRequests, mergedPullRequests, unmergedPullRequests, issues]
+      : await fetchActivityWithoutMemberOrgs(context, normalizedHandle, since, memberOrgs);
+
+  const prSignal = checkPullRequestActivity(filteredPullRequests, filteredMergedPullRequests);
+  if (prSignal === "bot") return "bot";
+  if (prSignal === "human") return "human";
+  score += prSignal;
+
   const activitySignal = await checkIssueAndPullRequestActivity(
     context,
-    unmergedPullRequests,
-    issues,
+    filteredUnmergedPullRequests,
+    filteredIssues,
   );
   if (activitySignal === "bot") return "bot";
   score += activitySignal;
@@ -157,6 +175,109 @@ async function searchGitHub<T>(
       items: [],
     }
   );
+}
+
+function createSearchExclusion(handle: string, orgs: string[] = []) {
+  return [`-user:${handle}`, ...orgs.map((org) => `-org:${org}`)].join(" ");
+}
+
+async function fetchActivityWithoutMemberOrgs(
+  context: ReturnType<typeof createGitHubContext>,
+  handle: string,
+  since: string,
+  memberOrgs: string[],
+) {
+  const searchExclusion = createSearchExclusion(handle, memberOrgs);
+
+  const [pullRequests, mergedPullRequests] = await Promise.all([
+    searchGitHub(context, `author:${handle} type:pr created:>=${since} ${searchExclusion}`),
+    searchGitHub(
+      context,
+      `author:${handle} type:pr is:merged created:>=${since} ${searchExclusion}`,
+    ),
+  ]);
+  const [unmergedPullRequests, issues] = await Promise.all([
+    searchGitHub<GitHubIssue>(
+      context,
+      `author:${handle} type:pr -is:merged created:>=${since} ${searchExclusion}`,
+      100,
+    ),
+    searchGitHub<GitHubIssue>(
+      context,
+      `author:${handle} type:issue created:>=${since} ${searchExclusion}`,
+      100,
+    ),
+  ]);
+
+  return [pullRequests, mergedPullRequests, unmergedPullRequests, issues] as const;
+}
+
+async function findHighActivityMemberOrgs(
+  context: ReturnType<typeof createGitHubContext>,
+  handle: string,
+  items: GitHubIssue[],
+) {
+  const ownerCounts = countByRepositoryOwner(items);
+  const candidateOrgs = [...ownerCounts]
+    .filter(([owner, count]) => owner !== handle && count >= MEMBER_ORG_ACTIVITY_THRESHOLD)
+    .map(([owner]) => owner);
+
+  const memberships = await Promise.all(
+    candidateOrgs.map(async (org) => ({
+      org,
+      isMember: await isOrganizationMember(context, org, handle),
+    })),
+  );
+
+  return memberships
+    .filter((membership) => membership.isMember)
+    .map((membership) => membership.org);
+}
+
+function countByRepositoryOwner(items: GitHubIssue[]) {
+  const counts = new Map<string, number>();
+
+  for (const item of items) {
+    const owner = getRepositoryOwner(item.repository_url);
+    if (!owner) continue;
+
+    counts.set(owner, (counts.get(owner) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+function getRepositoryOwner(repositoryUrl: string) {
+  const repositoryName = repositoryUrl.replace(`${GITHUB_API}/repos/`, "");
+  return repositoryName.split("/")[0]?.toLowerCase();
+}
+
+async function isOrganizationMember(
+  context: ReturnType<typeof createGitHubContext>,
+  org: string,
+  handle: string,
+) {
+  const response = await fetch(
+    `${GITHUB_API}/orgs/${encodeURIComponent(org)}/members/${encodeURIComponent(handle)}`,
+    {
+      headers: context.headers,
+      redirect: "manual",
+    },
+  );
+
+  if (response.status === 204) return true;
+
+  if (response.status !== 302) return false;
+
+  const publicResponse = await fetch(
+    `${GITHUB_API}/orgs/${encodeURIComponent(org)}/public_members/${encodeURIComponent(handle)}`,
+    {
+      headers: context.headers,
+      redirect: "manual",
+    },
+  );
+
+  return publicResponse.status === 204;
 }
 
 function checkRepositoryCreation(repos: GitHubRepo[]) {

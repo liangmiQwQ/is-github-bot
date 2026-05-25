@@ -205,11 +205,52 @@ test("excludes repositories owned by the checked user", async () => {
   expect(searchUrls.every((url) => url.includes("-user%3Aself"))).toBe(true);
 });
 
+test("excludes high activity organizations where the user is a member", async () => {
+  vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
+  const orgItems = Array.from({ length: 60 }, () => ({
+    body: null,
+    created_at: "2026-05-01T00:00:00Z",
+    repository_url: "https://api.github.com/repos/matesedu/project",
+  }));
+
+  mockGitHubFetch((url) => {
+    if (url.includes("/users/member/repos")) return [];
+
+    if (url.includes("/orgs/matesedu/members/member")) return new Response(null, { status: 302 });
+
+    if (url.includes("/orgs/matesedu/public_members/member"))
+      return new Response(null, { status: 204 });
+
+    if (url.includes("-org%3Amatesedu")) return searchResponse(0, []);
+
+    if (url.includes("/search/issues") && url.includes("-is%3Amerged"))
+      return searchResponse(60, orgItems);
+
+    if (url.includes("/search/issues") && url.includes("is%3Amerged"))
+      return searchResponse(40, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(80, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Aissue"))
+      return searchResponse(0, []);
+
+    return {
+      login: "member",
+      type: "User",
+    };
+  });
+
+  await expect(isGitHubBot("member")).resolves.toBe("human");
+});
+
 function mockGitHubFetch(getBody: (url: string) => unknown) {
   vi.stubGlobal(
     "fetch",
     vi.fn(async (input: RequestInfo | URL) => {
-      return Response.json(getBody(getRequestUrl(input)));
+      const body = getBody(getRequestUrl(input));
+      if (body instanceof Response) return body;
+
+      return Response.json(body);
     }),
   );
 }
