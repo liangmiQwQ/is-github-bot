@@ -205,9 +205,9 @@ test("excludes repositories owned by the checked user", async () => {
   expect(searchUrls.every((url) => url.includes("-user%3Aself"))).toBe(true);
 });
 
-test("excludes high activity organizations where the user is a member", async () => {
+test("lets member organization exclusion override raw bot signals", async () => {
   vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
-  const orgItems = Array.from({ length: 60 }, () => ({
+  const orgItems = Array.from({ length: 90 }, () => ({
     body: null,
     created_at: "2026-05-01T00:00:00Z",
     repository_url: "https://api.github.com/repos/matesedu/project",
@@ -221,15 +221,24 @@ test("excludes high activity organizations where the user is a member", async ()
     if (url.includes("/orgs/matesedu/public_members/member"))
       return new Response(null, { status: 204 });
 
-    if (url.includes("-org%3Amatesedu")) return searchResponse(0, []);
+    if (url.includes("-org%3Amatesedu") && url.includes("-is%3Amerged"))
+      return searchResponse(5, []);
+
+    if (url.includes("-org%3Amatesedu") && url.includes("is%3Amerged"))
+      return searchResponse(45, []);
+
+    if (url.includes("-org%3Amatesedu") && url.includes("type%3Apr")) return searchResponse(50, []);
+
+    if (url.includes("-org%3Amatesedu") && url.includes("type%3Aissue"))
+      return searchResponse(0, []);
 
     if (url.includes("/search/issues") && url.includes("-is%3Amerged"))
-      return searchResponse(60, orgItems);
+      return searchResponse(90, orgItems);
 
     if (url.includes("/search/issues") && url.includes("is%3Amerged"))
-      return searchResponse(40, []);
+      return searchResponse(10, []);
 
-    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(80, []);
+    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(100, []);
 
     if (url.includes("/search/issues") && url.includes("type%3Aissue"))
       return searchResponse(0, []);
