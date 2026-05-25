@@ -182,6 +182,29 @@ test("scores unmerged pull requests from total minus merged pull requests", asyn
   await expect(isGitHubBot("burst")).resolves.toBe("suspicious");
 });
 
+test("excludes repositories owned by the checked user", async () => {
+  vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
+  const searchUrls: string[] = [];
+
+  mockGitHubFetch((url) => {
+    if (url.includes("/users/self/repos")) return [];
+
+    if (url.includes("/search/issues")) {
+      searchUrls.push(url);
+      return searchResponse(0, []);
+    }
+
+    return {
+      login: "self",
+      type: "User",
+    };
+  });
+
+  await expect(isGitHubBot("self")).resolves.toBe("human");
+  expect(searchUrls).toHaveLength(4);
+  expect(searchUrls.every((url) => url.includes("-user%3Aself"))).toBe(true);
+});
+
 function mockGitHubFetch(getBody: (url: string) => unknown) {
   vi.stubGlobal(
     "fetch",
