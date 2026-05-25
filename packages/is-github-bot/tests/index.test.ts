@@ -157,13 +157,19 @@ test("returns bot for a single extreme issue and pull request day", async () => 
   await expect(isGitHubBot("burst")).resolves.toBe("bot");
 });
 
-test("scores unmerged pull requests from total minus merged pull requests", async () => {
+test("does not score dispersed unmerged pull request totals", async () => {
   vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
+  const unmergedPullRequests = Array.from({ length: 30 }, (_, index) => ({
+    body: null,
+    created_at: `2026-05-${String((index % 10) + 1).padStart(2, "0")}T00:00:00Z`,
+    repository_url: "https://api.github.com/repos/example/project",
+  }));
+
   mockGitHubFetch((url) => {
     if (url.includes("/users/burst/repos")) return [];
 
     if (url.includes("/search/issues") && url.includes("-is%3Amerged"))
-      return searchResponse(30, []);
+      return searchResponse(30, unmergedPullRequests);
 
     if (url.includes("/search/issues") && url.includes("is%3Amerged"))
       return searchResponse(20, []);
@@ -179,7 +185,38 @@ test("scores unmerged pull requests from total minus merged pull requests", asyn
     };
   });
 
-  await expect(isGitHubBot("burst")).resolves.toBe("suspicious");
+  await expect(isGitHubBot("burst")).resolves.toBe("human");
+});
+
+test("scores concentrated unmerged pull request frequency", async () => {
+  vi.setSystemTime(new Date("2026-05-24T00:00:00Z"));
+  const unmergedPullRequests = Array.from({ length: 8 }, () => ({
+    body: null,
+    created_at: "2026-05-01T00:00:00Z",
+    repository_url: "https://api.github.com/repos/example/project",
+  }));
+
+  mockGitHubFetch((url) => {
+    if (url.includes("/users/frequent/repos")) return [];
+
+    if (url.includes("/search/issues") && url.includes("-is%3Amerged"))
+      return searchResponse(30, unmergedPullRequests);
+
+    if (url.includes("/search/issues") && url.includes("is%3Amerged"))
+      return searchResponse(20, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Apr")) return searchResponse(50, []);
+
+    if (url.includes("/search/issues") && url.includes("type%3Aissue"))
+      return searchResponse(0, []);
+
+    return {
+      login: "frequent",
+      type: "User",
+    };
+  });
+
+  await expect(isGitHubBot("frequent")).resolves.toBe("suspicious");
 });
 
 test("excludes repositories owned by the checked user", async () => {

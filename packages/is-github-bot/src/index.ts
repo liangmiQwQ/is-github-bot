@@ -329,18 +329,12 @@ function checkPullRequestActivity(
   if (totalPullRequests <= 10) return 0;
 
   const mergeRate = mergedPullRequests.total_count / totalPullRequests;
-  const unmergedPullRequests = Math.max(0, totalPullRequests - mergedPullRequests.total_count);
 
   if (mergeRate >= 0.8 && totalPullRequests >= 20) return "human" as const;
-
-  if (unmergedPullRequests >= 80) return "bot" as const;
 
   if (mergeRate <= 0.2 && totalPullRequests >= 20) return "bot" as const;
 
   let score = 0;
-
-  if (unmergedPullRequests >= 40) score += 45;
-  else if (unmergedPullRequests >= 20) score += 25;
 
   if (mergeRate < 0.55) score += Math.ceil(((0.55 - mergeRate) / 0.55) ** 2 * 35);
 
@@ -355,13 +349,19 @@ async function checkIssueAndPullRequestActivity(
   const recentItems = [...pullRequests.items, ...issues.items];
   const dailyActivity = countByDay(recentItems, (item) => item.created_at);
   const maxDailyActivity = Math.max(0, ...dailyActivity.values());
+  const unmergedPullRequestsByDay = countByDay(pullRequests.items, (item) => item.created_at);
+  const maxDailyUnmergedPullRequests = Math.max(0, ...unmergedPullRequestsByDay.values());
 
-  if (maxDailyActivity >= 60 || issues.total_count >= 120) return "bot" as const;
+  if (maxDailyActivity >= 60 || maxDailyUnmergedPullRequests >= 30 || issues.total_count >= 120)
+    return "bot" as const;
 
   let score = 0;
 
   if (maxDailyActivity >= 25 || issues.total_count >= 60) score += 35;
   else if (maxDailyActivity >= 12 || issues.total_count >= 30) score += 20;
+
+  if (maxDailyUnmergedPullRequests >= 15) score += 45;
+  else if (maxDailyUnmergedPullRequests >= 8) score += 25;
 
   score += scorePullRequestBodies(pullRequests.items);
   score += await scoreRepositorySpan(context, recentItems);
