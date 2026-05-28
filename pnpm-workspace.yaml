@@ -11,18 +11,18 @@ allowBuilds:
 catalogs:
   build:
     "@tsdown/css": ^0.22.0
-    "@vitejs/plugin-vue": ^6.0.3
-    "@unocss/reset": ^66.5.9
+    "@vitejs/plugin-vue": ^6.0.7
+    "@unocss/reset": ^66.7.0
     vite: npm:@voidzero-dev/vite-plus-core@latest
     vitest: npm:@voidzero-dev/vite-plus-test@latest
     vite-plus: latest
     typescript: ^6.0.3
     "@typescript/native-preview": 7.0.0-dev.20260509.2
-    unocss: ^66.5.9
-    unplugin-vue: ^7.0.1
+    unocss: ^66.7.0
+    unplugin-vue: ^7.2.0
     void: latest
-    vue: ^3.5.25
-    "@vueuse/core": ^14.1.0
+    vue: ^3.5.35
+    "@vueuse/core": ^14.3.0
   cli:
     bumpp: ^11.1.0
     cac: ^7.0.0
@@ -31,7 +31,7 @@ catalogs:
   icon:
     "@iconify-json/ph": ^1.2.2
   type:
-    "@types/node": ^25.6.2
+    "@types/node": ^25.9.1
 
 overrides:
   vite: "catalog:build"
