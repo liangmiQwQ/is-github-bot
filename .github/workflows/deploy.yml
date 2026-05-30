@@ -19,7 +19,8 @@ jobs:
           cache: true
           run-install: true
 
-      - run: vp run website#deploy
+      - run: void deploy
+        working-directory: website
         env:
           VOID_TOKEN: ${{ secrets.VOID_TOKEN }}
           VOID_PROJECT: ${{ secrets.VOID_PROJECT }}
