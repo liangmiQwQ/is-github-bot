@@ -11,6 +11,7 @@ Inspired by [@MengXi-ream](https://github.com/MengXi-ream) and [Read Frog's GitH
 - Uses recent activity from the last six months.
 - Supports an optional GitHub token for higher API limits and authenticated extension actions.
 - Ships a CLI wrapper around the same package logic.
+- Provides a reusable GitHub Actions workflow for labeling suspicious issues and pull requests.
 - Includes a static Vue website that runs checks in the browser.
 - Includes a Chrome extension that annotates GitHub issue, pull request, and profile pages.
 
@@ -68,6 +69,37 @@ From this repository:
 ```bash
 vp run is-github-bot github-actions
 ```
+
+## GitHub Actions
+
+Use the reusable workflow to label suspicious issue and pull request authors:
+
+```yaml
+name: Check AI spammers
+
+on:
+  issues:
+    types: [opened, edited]
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  check:
+    uses: liangmiQwQ/is-github-bot/.github/workflows/check.yml@v1
+    with:
+      label-bot: "AI Bot"
+      label-suspicious: "Suspicious AI"
+      comment: true
+      close: false
+      close-after-days: 3
+```
+
+When `close` is enabled, the workflow closes marked issues or pull requests only after `close-after-days` has passed and there is no non-bot follow-up comment.
 
 ## Website
 
