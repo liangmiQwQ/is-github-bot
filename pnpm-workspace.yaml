@@ -13,9 +13,8 @@ catalogs:
     "@tsdown/css": ^0.22.0
     "@vitejs/plugin-vue": ^6.0.7
     "@unocss/reset": ^66.7.0
-    vite: npm:@voidzero-dev/vite-plus-core@latest
-    vitest: npm:@voidzero-dev/vite-plus-test@latest
-    vite-plus: latest
+    vite: npm:@voidzero-dev/vite-plus-core@0.2.1
+    vite-plus: 0.2.1
     typescript: ^6.0.3
     "@typescript/native-preview": 7.0.0-dev.20260509.2
     unocss: ^66.7.0
@@ -35,11 +34,8 @@ catalogs:
 
 overrides:
   vite: "catalog:build"
-  vitest: "catalog:build"
 peerDependencyRules:
   allowAny:
     - vite
-    - vitest
   allowedVersions:
     vite: "*"
-    vitest: "*"
