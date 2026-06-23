@@ -4,13 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "is-github-bot": "vp run is-github-bot#is-github-bot",
-    "ready": "vp check && vp run -r test && vp run -r build",
-    "dev": "vp run website#dev",
     "build": "vp run -r build",
+    "dev": "vp run website#dev",
+    "is-github-bot": "vp run is-github-bot#is-github-bot",
+    "ready": "vp run ccheck && vp run -r test && vp run -r build",
     "release": "bumpp"
   },
   "devDependencies": {
+    "@liangmi/vp-config": "catalog:build",
     "@oxc-node/cli": "catalog:cli",
     "bumpp": "catalog:cli",
     "vite-plus": "catalog:build"

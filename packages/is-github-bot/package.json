@@ -25,13 +25,13 @@
     "access": "public"
   },
   "scripts": {
-    "is-github-bot": "oxnode ./src/cli.ts",
-    "github-action": "oxnode ./src/github-action.ts",
-    "build": "vp pack",
+    "build": "vp run cpack",
+    "check": "vp run ccheck",
     "dev": "vp pack --watch",
-    "test": "vp test",
-    "check": "vp check",
-    "prepublishOnly": "vp run build"
+    "github-action": "oxnode ./src/github-action.ts",
+    "is-github-bot": "oxnode ./src/cli.ts",
+    "prepublishOnly": "vp run build",
+    "test": "vp run ctest"
   },
   "dependencies": {
     "cac": "catalog:cli",

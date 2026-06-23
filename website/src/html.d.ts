@@ -1,7 +1,7 @@
-declare module "@vue/runtime-dom" {
-  interface HTMLAttributes {
-    [key: string]: unknown;
+import '@vue/runtime-dom'
+
+declare module '@vue/runtime-dom' {
+  interface HTMLAttributes extends Record<string, unknown> {
+    fixed?: boolean
   }
 }
-
-export {};

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BotCheckResult } from "../composables/useBotCheck";
+import type { BotCheckResult } from '../composables/useBotCheck.ts'
 import ResultCard from "./ResultCard.vue";
 import { computed } from "vue";
 

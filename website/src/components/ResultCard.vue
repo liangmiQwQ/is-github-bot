@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BotCheckResult } from "../composables/useBotCheck";
+import type { BotCheckResult } from '../composables/useBotCheck.ts'
 import { computed } from "vue";
 
 const props = defineProps<{
@@ -7,22 +7,22 @@ const props = defineProps<{
 }>();
 
 const statusIcon = computed(() => {
-  if (props.result.status === "human") return "i-ph-check-circle";
-  if (props.result.status === "bot") return "i-ph-robot";
-  if (props.result.status === "suspicious") return "i-ph-warning-circle";
+  if (props.result.status === "human") {return "i-ph-check-circle";}
+  if (props.result.status === "bot") {return "i-ph-robot";}
+  if (props.result.status === "suspicious") {return "i-ph-warning-circle";}
   return "i-ph-question";
 });
 
 const statusLabel = computed(() => {
-  if (props.result.status === "human") return "Likely human";
-  if (props.result.status === "bot") return "Likely bot";
-  if (props.result.status === "suspicious") return "Suspicious";
+  if (props.result.status === "human") {return "Likely human";}
+  if (props.result.status === "bot") {return "Likely bot";}
+  if (props.result.status === "suspicious") {return "Suspicious";}
   return "No verdict";
 });
 
 const statusClass = computed(() => {
-  if (props.result.status === "bot") return "bg-red-600 text-white dark:bg-red-500 dark:text-white";
-  if (props.result.status === "suspicious") return "bg-amber-500 text-black";
+  if (props.result.status === "bot") {return "bg-red-600 text-white dark:bg-red-500 dark:text-white";}
+  if (props.result.status === "suspicious") {return "bg-amber-500 text-black";}
   return "";
 });
 
