@@ -33,6 +33,9 @@ catalogs:
   type:
     '@types/node': ^25.9.1
 
+minimumReleaseAgeExclude:
+  - '@liangmi/vp-config@0.1.2'
+
 overrides:
   vite: 'catalog:build'
 peerDependencyRules:
