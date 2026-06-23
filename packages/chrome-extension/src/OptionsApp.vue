@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, shallowRef } from "vue";
-import {
-  DEFAULT_SETTINGS,
-  readSettings,
-  writeSettings,
-  type ExtensionSettings,
-} from "./settings.ts";
+import { DEFAULT_SETTINGS, readSettings, writeSettings } from './settings.ts';
+import type { ExtensionSettings } from './settings.ts';
 
 const settings = reactive<ExtensionSettings>({ ...DEFAULT_SETTINGS });
 const loaded = shallowRef(false);
@@ -32,7 +28,7 @@ onMounted(async () => {
 async function save() {
   await writeSettings({ ...settings });
   saved.value = true;
-  window.setTimeout(() => {
+  globalThis.setTimeout(() => {
     saved.value = false;
   }, 1800);
 }

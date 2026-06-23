@@ -14,6 +14,8 @@ If you want detailed information about some feature, view [RFCS](/rfcs) director
 
 Vite+ is used as the project manager. Use `vp install` to install dependencies. Always use named catalogs in `pnpm-workspace.yaml` to manage dependency versions. Use `vp run` command to run commands in `package.json`.
 
+Use `@liangmi/vp-config` for Vite+ configuration. Use `base` at the workspace root and the matching project preset in each workspace package.
+
 Run `vp check` (lint and format) and `vp test`(vitest) after you make changes.
 
 Keep AGENTS.md updated with the project codebase. Consider if there is need to modify AGENTS.md after your changes. Don't store meaningless things like project structure or project status in AGENTS.md.

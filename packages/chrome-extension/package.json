@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vp run is-github-bot#build && vp pack",
-    "dev": "vp pack --watch",
-    "check": "vp check"
+    "build": "vp run is-github-bot#build && vp run cpack",
+    "check": "vp run ccheck",
+    "dev": "vp pack --watch"
   },
   "dependencies": {
     "is-github-bot": "workspace:*",
