@@ -18,7 +18,6 @@
     "@iconify-json/ph": "catalog:icon",
     "@unocss/reset": "catalog:build",
     "@vitejs/plugin-vue": "catalog:build",
-    "typescript": "catalog:build",
     "unocss": "catalog:build",
     "vite": "catalog:build",
     "vite-plus": "catalog:build",

@@ -38,9 +38,6 @@
     "picocolors": "catalog:cli"
   },
   "devDependencies": {
-    "@types/node": "catalog:type",
-    "@typescript/native-preview": "catalog:build",
-    "typescript": "catalog:build",
-    "vite-plus": "catalog:build"
+    "@types/node": "catalog:type"
   }
 }

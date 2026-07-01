@@ -12,7 +12,10 @@
   },
   "devDependencies": {
     "@oxc-node/cli": "catalog:cli",
+    "@types/node": "catalog:type",
+    "@typescript/native-preview": "catalog:build",
     "bumpp": "catalog:cli",
+    "typescript": "catalog:build",
     "vite-plus": "catalog:build"
   },
   "engines": {
