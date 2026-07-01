@@ -16,7 +16,7 @@ catalogs:
     vite: npm:@voidzero-dev/vite-plus-core@0.2.1
     vite-plus: 0.2.1
     typescript: ^6.0.3
-    "@typescript/native-preview": 7.0.0-dev.20260509.2
+    "@typescript/native-preview": 7.0.0-dev.20260629.1
     unocss: ^66.7.0
     unplugin-vue: ^7.2.0
     void: latest
@@ -30,7 +30,7 @@ catalogs:
   icon:
     "@iconify-json/ph": ^1.2.2
   type:
-    "@types/node": ^25.9.1
+    "@types/node": ^26.0.1
 
 overrides:
   vite: "catalog:build"
