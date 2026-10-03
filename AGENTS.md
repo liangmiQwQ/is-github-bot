@@ -16,7 +16,7 @@ Vite+ is used as the project manager. Use `vp install` to install dependencies. 
 
 Run `vp check` (lint and format) and `vp test`(vitest) after you make changes.
 
-If you find AGENTS.md is outdated, please notice users to change in response. Don't store meaningless things like project structure or project status in AGENTS.md.
+If you find AGENTS.md is outdated, please notice users to change in response.
 
 Never use emoji no matter where.
 
