@@ -1,5 +1,6 @@
-import "./options.css";
-import { createApp } from "vue";
-import OptionsApp from "./OptionsApp.vue";
+import './options.css'
+import { createApp } from 'vue'
 
-createApp(OptionsApp).mount("#app");
+import OptionsApp from './OptionsApp.vue'
+
+createApp(OptionsApp).mount('#app')

@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "vp run cbuild",
+    "deploy": "void deploy",
     "dev": "vp dev",
-    "build": "tsc && vp build",
-    "preview": "vp preview",
-    "deploy": "void deploy"
+    "preview": "vp preview"
   },
   "dependencies": {
     "@vueuse/core": "catalog:build",
@@ -21,6 +21,7 @@
     "unocss": "catalog:build",
     "vite": "catalog:build",
     "vite-plus": "catalog:build",
-    "void": "catalog:build"
+    "void": "catalog:build",
+    "wrangler": "catalog:build"
   }
 }

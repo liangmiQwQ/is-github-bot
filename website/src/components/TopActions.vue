@@ -1,12 +1,12 @@
 <script setup lang="ts">
 defineProps<{
-  mode: "dark" | "light";
-}>();
+  mode: 'dark' | 'light'
+}>()
 
 const emit = defineEmits<{
-  openSettings: [];
-  toggleMode: [];
-}>();
+  openSettings: []
+  toggleMode: []
+}>()
 </script>
 
 <template>

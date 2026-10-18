@@ -1,40 +1,37 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, shallowRef } from "vue";
-import {
-  DEFAULT_SETTINGS,
-  readSettings,
-  writeSettings,
-  type ExtensionSettings,
-} from "./settings.ts";
+import { computed, onMounted, reactive, shallowRef } from 'vue'
 
-const settings = reactive<ExtensionSettings>({ ...DEFAULT_SETTINGS });
-const loaded = shallowRef(false);
-const saved = shallowRef(false);
+import { DEFAULT_SETTINGS, readSettings, writeSettings } from './settings.ts'
+import type { ExtensionSettings } from './settings.ts'
+
+const settings = reactive<ExtensionSettings>({ ...DEFAULT_SETTINGS })
+const loaded = shallowRef(false)
+const saved = shallowRef(false)
 
 const sections = computed(() => [
   {
-    title: "Issue and pull request pages",
+    title: 'Issue and pull request pages',
     description:
-      "Check the author, mark their avatar, and expose maintainer actions for bot accounts.",
+      'Check the author, mark their avatar, and expose maintainer actions for bot accounts.'
   },
   {
-    title: "Profile pages",
+    title: 'Profile pages',
     description:
-      "Check personal GitHub profiles and optionally add a block shortcut for bot accounts.",
-  },
-]);
+      'Check personal GitHub profiles and optionally add a block shortcut for bot accounts.'
+  }
+])
 
 onMounted(async () => {
-  Object.assign(settings, await readSettings());
-  loaded.value = true;
-});
+  Object.assign(settings, await readSettings())
+  loaded.value = true
+})
 
 async function save() {
-  await writeSettings({ ...settings });
-  saved.value = true;
-  window.setTimeout(() => {
-    saved.value = false;
-  }, 1800);
+  await writeSettings({ ...settings })
+  saved.value = true
+  globalThis.setTimeout(() => {
+    saved.value = false
+  }, 1800)
 }
 </script>
 
@@ -150,7 +147,7 @@ async function save() {
             @click="save"
           >
             <span class="i-ph-floppy-disk" aria-hidden="true" />
-            {{ saved ? "Saved" : "Save" }}
+            {{ saved ? 'Saved' : 'Save' }}
           </button>
         </div>
       </div>

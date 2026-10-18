@@ -1,78 +1,95 @@
 <script setup lang="ts">
-import type { BotCheckResult } from "../composables/useBotCheck";
-import { computed } from "vue";
+import { computed } from 'vue'
+
+import type { BotCheckResult } from '../composables/useBotCheck.ts'
 
 const props = defineProps<{
-  result: BotCheckResult;
-}>();
+  result: BotCheckResult
+}>()
 
 const statusIcon = computed(() => {
-  if (props.result.status === "human") return "i-ph-check-circle";
-  if (props.result.status === "bot") return "i-ph-robot";
-  if (props.result.status === "suspicious") return "i-ph-warning-circle";
-  return "i-ph-question";
-});
+  if (props.result.status === 'human') {
+    return 'i-ph-check-circle'
+  }
+  if (props.result.status === 'bot') {
+    return 'i-ph-robot'
+  }
+  if (props.result.status === 'suspicious') {
+    return 'i-ph-warning-circle'
+  }
+  return 'i-ph-question'
+})
 
 const statusLabel = computed(() => {
-  if (props.result.status === "human") return "Likely human";
-  if (props.result.status === "bot") return "Likely bot";
-  if (props.result.status === "suspicious") return "Suspicious";
-  return "No verdict";
-});
+  if (props.result.status === 'human') {
+    return 'Likely human'
+  }
+  if (props.result.status === 'bot') {
+    return 'Likely bot'
+  }
+  if (props.result.status === 'suspicious') {
+    return 'Suspicious'
+  }
+  return 'No verdict'
+})
 
 const statusClass = computed(() => {
-  if (props.result.status === "bot") return "bg-red-600 text-white dark:bg-red-500 dark:text-white";
-  if (props.result.status === "suspicious") return "bg-amber-500 text-black";
-  return "";
-});
+  if (props.result.status === 'bot') {
+    return 'bg-red-600 text-white dark:bg-red-500 dark:text-white'
+  }
+  if (props.result.status === 'suspicious') {
+    return 'bg-amber-500 text-black'
+  }
+  return ''
+})
 
 const createdAtLabel = computed(() =>
-  new Intl.DateTimeFormat("en", {
-    month: "short",
-    year: "numeric",
-  }).format(new Date(props.result.profile.createdAt)),
-);
+  new Intl.DateTimeFormat('en', {
+    month: 'short',
+    year: 'numeric'
+  }).format(new Date(props.result.profile.createdAt))
+)
 
 const homepageLabel = computed(() =>
-  props.result.profile.homepage.replace(/^https?:\/\//i, "").replace(/\/$/, ""),
-);
+  props.result.profile.homepage.replace(/^https?:\/\//i, '').replace(/\/$/, '')
+)
 
 const profileFacts = computed(() =>
   [
     {
-      icon: "i-ph-link",
-      label: homepageLabel.value || "No homepage listed",
-      href: props.result.profile.homepage,
+      icon: 'i-ph-link',
+      label: homepageLabel.value || 'No homepage listed',
+      href: props.result.profile.homepage
     },
     {
-      icon: "i-ph-buildings",
-      label: props.result.profile.company,
+      icon: 'i-ph-buildings',
+      label: props.result.profile.company
     },
     {
-      icon: "i-ph-map-pin",
-      label: props.result.profile.location,
-    },
-  ].filter((fact) => fact.label),
-);
+      icon: 'i-ph-map-pin',
+      label: props.result.profile.location
+    }
+  ].filter(fact => fact.label)
+)
 
 const accountSignals = computed(() => [
   {
-    label: "Repos",
-    value: props.result.profile.publicRepos.toLocaleString(),
+    label: 'Repos',
+    value: props.result.profile.publicRepos.toLocaleString()
   },
   {
-    label: "Followers",
-    value: props.result.profile.followers.toLocaleString(),
+    label: 'Followers',
+    value: props.result.profile.followers.toLocaleString()
   },
   {
-    label: "Following",
-    value: props.result.profile.following.toLocaleString(),
+    label: 'Following',
+    value: props.result.profile.following.toLocaleString()
   },
   {
-    label: "Joined",
-    value: createdAtLabel.value,
-  },
-]);
+    label: 'Joined',
+    value: createdAtLabel.value
+  }
+])
 </script>
 
 <template>
