@@ -1,16 +1,11 @@
-import { defineConfig } from "vite-plus";
+import { liangmi } from '@liangmi/vp-config'
 
-export default defineConfig({
+export default await liangmi({
   pack: {
-    entry: ["src/index.ts", "src/cli.ts", "src/github-action.ts"],
-    dts: {
-      tsgo: true,
-    },
+    entry: ['src/index.ts', 'src/cli.ts', 'src/github-action.ts'],
     deps: {
-      neverBundle: ["node:child_process", "node:fs/promises", "node:util"],
+      neverBundle: ['node:child_process', 'node:fs/promises', 'node:util']
     },
-    exports: true,
-    fixedExtension: true,
-    platform: "neutral",
-  },
-});
+    platform: 'neutral'
+  }
+})

@@ -1,7 +1,6 @@
-declare module "@vue/runtime-dom" {
-  interface HTMLAttributes {
-    [key: string]: unknown;
-  }
-}
+// oxlint-disable-next-line import/no-unassigned-import -- Augment Vue rather than replace its module declarations.
+import '@vue/runtime-dom'
 
-export {};
+declare module '@vue/runtime-dom' {
+  type HTMLAttributes = Record<string, unknown>
+}

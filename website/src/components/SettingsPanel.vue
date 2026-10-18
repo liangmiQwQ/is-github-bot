@@ -1,16 +1,16 @@
 <script setup lang="ts">
 defineProps<{
-  open: boolean;
-  token: string;
-}>();
+  open: boolean
+  token: string
+}>()
 
 const emit = defineEmits<{
-  close: [];
-  updateToken: [token: string];
-}>();
+  close: []
+  updateToken: [token: string]
+}>()
 
 function updateToken(event: Event) {
-  emit("updateToken", (event.target as HTMLInputElement).value);
+  emit('updateToken', (event.target as HTMLInputElement).value)
 }
 </script>
 

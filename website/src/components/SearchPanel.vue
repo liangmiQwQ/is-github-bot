@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import type { BotCheckResult } from "../composables/useBotCheck";
-import ResultCard from "./ResultCard.vue";
-import { computed } from "vue";
+import { computed } from 'vue'
 
-const query = defineModel<string>({ required: true });
+import type { BotCheckResult } from '../composables/useBotCheck.ts'
+import ResultCard from './ResultCard.vue'
+
+const query = defineModel<string>({ required: true })
 
 const props = defineProps<{
-  error: string;
-  loading: boolean;
-  result: BotCheckResult | undefined;
-}>();
+  error: string
+  loading: boolean
+  result: BotCheckResult | undefined
+}>()
 
 const emit = defineEmits<{
-  submit: [];
-}>();
+  submit: []
+}>()
 
-const canSubmit = computed(() => query.value.trim().length > 0 && !props.loading);
+const canSubmit = computed(() => query.value.trim().length > 0 && !props.loading)
 </script>
 
 <template>
